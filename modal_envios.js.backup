@@ -1,0 +1,209 @@
+// Modal de Gestión de Envíos
+window.abrirPanelEnvios = function(clientes, tipo, mensaje) {
+  const casoId = 'NOA-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-6);
+  
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 10000;
+    display: flex; justify-content: center; align-items: center;
+  `;
+  
+  const panel = document.createElement('div');
+  panel.style.cssText = `
+    background: #1F2937; border-radius: 16px; width: 90%; max-width: 800px;
+    max-height: 80vh; overflow-y: auto; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  `;
+  
+  const icono = tipo === 'email' ? '📧' : '📱';
+  const tipoTexto = tipo === 'email' ? 'Email' : 'WhatsApp';
+  
+  let html = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="color: #fff; margin: 0;">${icono} Gestión de Envíos ${tipoTexto}</h2>
+      <button onclick="this.closest('div').parentElement.parentElement.remove()" 
+        style="background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer;">✕</button>
+      <button onclick="window.enviarTodosAuto('${casoId}', '${tipo}')" 
+        style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; 
+        padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+        🚀 Enviar Todos Automáticamente
+      </button>
+    </div>
+    <div style="background: #111827; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <div style="color: #10B981; font-size: 14px;">Caso: <strong>#${casoId}</strong></div>
+      <div style="color: #CBD5E1; font-size: 14px; margin-top: 5px;">Total clientes: <strong>${clientes.length}</strong></div>
+      <div id="progress-${casoId}" style="color: #0EA5E9; font-size: 14px; margin-top: 5px;">Progreso: 0/${clientes.length}</div>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <strong style="color: #CBD5E1;">Mensaje:</strong>
+      <div style="background: #111827; padding: 10px; border-radius: 8px; color: #fff; margin-top: 8px; font-size: 13px; white-space: pre-wrap;">${mensaje}</div>
+    </div>
+    <div id="lista-clientes-${casoId}">
+  `;
+  
+  clientes.forEach((cliente, i) => {
+    const contacto = tipo === 'email' ? cliente.correo : cliente.telefono;
+    html += `
+      <div id="cliente-${i}" style="background: #111827; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #F59E0B;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="color: #fff; font-weight: 600;">#${i+1} ${cliente.asegurado || 'Sin nombre'}</div>
+            <div style="color: #CBD5E1; font-size: 13px; margin-top: 4px;">${icono} ${contacto}</div>
+            <div style="color: #94A3B8; font-size: 12px; margin-top: 4px;">Póliza: ${cliente.poliza || 'N/A'}</div>
+          </div>
+          <div>
+            <button onclick="window.enviarIndividual('${tipo}', ${i}, '${casoId}')" 
+              style="background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; 
+              padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-right: 8px; font-size: 13px;">
+              ${tipo === 'email' ? '📧 Enviar' : '📱 Enviar WA'}
+            </button>
+            <button onclick="window.copiarMensaje(${i})" 
+              style="background: #374151; color: white; border: none; 
+              padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px;">
+              📋 Copiar
+            </button>
+          </div>
+        </div>
+        <div id="estado-${i}" style="color: #F59E0B; font-size: 12px; margin-top: 8px;">⏳ Pendiente</div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  panel.innerHTML = html;
+  modal.appendChild(panel);
+  document.body.appendChild(modal);
+  
+  // Guardar datos en window
+  window.enviosData = { clientes, tipo, mensaje, casoId };
+};
+
+window.enviarIndividual = async function(tipo, index, casoId) {
+  const { clientes, mensaje } = window.enviosData;
+  const cliente = clientes[index];
+  
+  const estadoEl = document.getElementById(`estado-${index}`);
+  estadoEl.textContent = '⏳ Enviando...';
+  estadoEl.style.color = '#0EA5E9';
+  
+  if (tipo === 'email') {
+    try {
+      await emailjs.send("service_5qw0pdf", "template_h2wju7h", {
+        to_email: cliente.correo,
+        asunto: "Recordatorio de Póliza",
+        nombre: cliente.asegurado || "Estimado cliente",
+        mensaje: mensaje,
+        corredor: "Tony Villalobos",
+        agencia: "NOA Seguros",
+        whatsapp_corredor: "+506 8888-8888",
+        email_corredor: "vtonyb@gmail.com",
+        fecha: new Date().toLocaleDateString(),
+        poliza: cliente.poliza || "N/A",
+        score_ia: "85%"
+      });
+      
+      // Guardar en historial
+      const result = await window.guardarEnvio(cliente.id, cliente.asegurado, 1, "email", mensaje);
+      
+      if (result.success) {
+        estadoEl.textContent = '✅ Enviado y registrado';
+        estadoEl.style.color = '#10B981';
+      } else {
+        estadoEl.textContent = '⚠️ Enviado pero no registrado';
+        estadoEl.style.color = '#F59E0B';
+        console.error('Error guardando:', result.error);
+      }
+    } catch(e) {
+      estadoEl.textContent = '❌ Error al enviar';
+      estadoEl.style.color = '#EF4444';
+      console.error('Error email:', e);
+    }
+  } else {
+    try {
+      const telefono = (cliente.telefono || '').replace(/[^0-9]/g, '');
+      const mensajePersonalizado = `Hola ${cliente.asegurado || ''},\n\n${mensaje}\n\n---\nPóliza: ${cliente.poliza || 'N/A'}\nVence: ${cliente.desde || 'N/A'}\n\nSaludos,\nTony Villalobos\nNOA Seguros`;
+      
+      // Usar WasenderAPI
+      const apiKey = localStorage.getItem('wasender_api_key');
+      
+      if (apiKey) {
+        // Enviar via API
+        const response = await fetch('https://api.wasender.com/api/v1/messages/text', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            phone: telefono,
+            message: mensajePersonalizado
+          })
+        });
+        
+        if (response.ok) {
+          estadoEl.textContent = '✅ Enviado via API';
+          estadoEl.style.color = '#10B981';
+          
+          // Guardar en historial
+          const result = await window.guardarEnvio(cliente.id, cliente.asegurado, 1, "whatsapp", mensaje);
+          if (!result.success) {
+            console.error('Error guardando:', result.error);
+          }
+        } else {
+          throw new Error('API falló');
+        }
+      } else {
+        // Fallback: abrir wa.me
+        const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensajePersonalizado)}`;
+        window.open(url, '_blank');
+        estadoEl.textContent = '✅ Abierto en navegador';
+        estadoEl.style.color = '#10B981';
+        
+        // Guardar en historial
+        const result = await window.guardarEnvio(cliente.id, cliente.asegurado, 1, "whatsapp", mensaje);
+        if (!result.success) {
+          console.error('Error guardando:', result.error);
+        }
+      }
+    } catch(e) {
+      estadoEl.textContent = '❌ Error';
+      estadoEl.style.color = '#EF4444';
+      console.error('Error WhatsApp:', e);
+    }
+  }
+  
+  actualizarProgreso(casoId);
+};
+
+window.copiarMensaje = function(index) {
+  const { clientes, mensaje } = window.enviosData;
+  const cliente = clientes[index];
+  const mensajePersonalizado = `Hola ${cliente.asegurado || ''},\n\n${mensaje}\n\n---\nPóliza: ${cliente.poliza || 'N/A'}\nVence: ${cliente.desde || 'N/A'}\n\nSaludos,\nTony Villalobos\nNOA Seguros`;
+  navigator.clipboard.writeText(mensajePersonalizado);
+  alert('📋 Mensaje copiado al portapapeles');
+};
+
+function actualizarProgreso(casoId) {
+  const completados = document.querySelectorAll('[id^="estado-"]');
+  let enviados = 0;
+  completados.forEach(el => {
+    if (el.textContent.includes('✅')) enviados++;
+  });
+  document.getElementById("progress-" + casoId).textContent = "Progreso: " + enviados + "/" + window.enviosData.clientes.length;
+}
+
+window.enviarTodosAuto = async function(casoId, tipo) {
+  const { clientes } = window.enviosData;
+  const delay = tipo === 'email' ? 5000 : 45000;
+  
+  if (!confirm("¿Enviar a " + clientes.length + " clientes automáticamente?\n\nDelay: " + (delay/1000) + " segundos entre cada uno")) return;
+  
+  for (let i = 0; i < clientes.length; i++) {
+    await window.enviarIndividual(tipo, i, casoId);
+    if (i < clientes.length - 1) {
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  
+  alert("✅ Todos los " + clientes.length + " mensajes enviados!");
+};

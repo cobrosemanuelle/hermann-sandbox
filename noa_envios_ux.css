@@ -1,0 +1,35 @@
+/* NOA · Historial Envíos UX: encabezados, filtros con estado activo, colores de estado y sin textos cortados */
+#historial>div{background:#fff!important;border:1px solid #e5e7eb!important;border-radius:12px!important;padding:18px 20px!important;box-shadow:none!important;}
+/* Filtros: píldoras claras, la activa en verde azulado; Exportar a la derecha */
+#historial>div>div:first-child{flex-wrap:wrap;align-items:center;}
+#historial>div>div:first-child button{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;border-radius:999px!important;padding:7px 16px!important;font-size:13px!important;font-weight:600!important;box-shadow:none!important;}
+#historial>div>div:first-child button.noa-env-activo{background:#0d9488!important;color:#fff!important;border-color:#0d9488!important;}
+#historial>div>div:first-child button[onclick*="exportarHistorialExcel"]{margin-left:auto!important;background:#fff!important;color:#0f766e!important;border:1px solid #99f6e4!important;border-radius:8px!important;}
+/* Tabla */
+#historial table{width:100%;}
+#historial thead th{background:#f8fafc!important;color:#475569!important;font-size:11px!important;letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:10px 12px!important;border-bottom:1px solid #e5e7eb!important;}
+#historial tbody td{color:#111827!important;border-bottom:1px solid #f1f5f9!important;max-width:none!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap;font-size:14px;}
+#historial tbody tr:hover td{background:#f0fdfa!important;}
+/* La columna Destinatario repetía el nombre del cliente: se oculta (sigue en el Excel) */
+#historial thead th:nth-child(4),#historial tbody td:nth-child(4){display:none!important;}
+/* Origen: pasa a un icono dentro del mensaje (👤 manual · 📦 masivo · 🤖 automático) */
+#historial thead th:nth-child(6),#historial tbody td:nth-child(6){display:none!important;}
+/* Estado con color */
+#historial tbody td[style*="#10B981"]{color:#0f766e!important;font-weight:600;}
+#historial tbody td[style*="#EF4444"]{color:#dc2626!important;font-weight:700;}
+#historial tbody tr:has(td[style*="#EF4444"]) td{background:#fef2f2;}
+/* Mensaje: se ve completo al hacer clic */
+#historial tbody td[onclick]{color:#475569!important;max-width:0!important;width:100%;overflow:hidden!important;text-overflow:ellipsis!important;text-decoration:none!important;cursor:pointer;}
+#historial tbody td[onclick]:hover{color:#0f766e!important;text-decoration:underline!important;}
+/* Buscador del historial */
+#historial .noa-env-buscar{display:flex;align-items:center;gap:8px;}
+#historial #env-buscar{width:300px;max-width:100%;padding:8px 14px!important;border:1px solid #d1d5db!important;border-radius:999px!important;background:#fff!important;color:#111827!important;font-size:13px!important;outline:none;}
+#historial #env-buscar:focus{border-color:#0d9488!important;box-shadow:0 0 0 3px #ccfbf1;}
+#historial #env-buscar-n{font-size:12px;font-weight:600;color:#64748b;white-space:nowrap;}
+/* Segunda fila: rango de fechas, limpiar y contador */
+#historial .noa-env-fechas{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:-6px 0 16px;font-size:12px;font-weight:600;color:#64748b;}
+#historial .noa-env-fechas input[type=date]{padding:7px 12px!important;border:1px solid #d1d5db!important;border-radius:8px!important;background:#fff!important;color:#111827!important;font-size:13px!important;outline:none;}
+#historial .noa-env-fechas input[type=date]:focus{border-color:#0d9488!important;box-shadow:0 0 0 3px #ccfbf1;}
+#historial .noa-env-fechas button{padding:7px 14px;border:1px solid #d1d5db;border-radius:999px;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer;}
+#historial .noa-env-fechas button:hover{border-color:#0d9488;color:#0f766e;}
+#historial #env-cuenta{margin-left:auto;font-size:12px;font-weight:600;color:#64748b;white-space:nowrap;}

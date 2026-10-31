@@ -1,0 +1,23 @@
+/* NOA · Configuración UX: todo en tarjetas claras, un solo estilo */
+#configuracion>h2{color:#12263f!important;font-size:20px!important;margin:0 0 14px!important;}
+/* Tarjetas: la 2 (datos del corredor) ya era blanca; las demás eran oscuras */
+#configuracion>div{background:#fff!important;border:1px solid #e5e7eb!important;border-radius:12px!important;box-shadow:none!important;color:#111827!important;padding:22px 24px!important;margin:0 0 16px!important;}
+#configuracion>div *{color:inherit;}
+#configuracion>div h3,#configuracion>div h4{color:#12263f!important;font-size:16px!important;margin:0 0 6px!important;}
+#configuracion>div p,#configuracion>div label,#configuracion>div small,#configuracion>div span{color:#6b7280!important;}
+/* Casillas internas que eran oscuras */
+#configuracion>div div{background:transparent!important;border-color:#e5e7eb!important;color:#374151!important;}
+#configuracion>div div[style*="border"]{background:#f8fafc!important;}
+/* Campos */
+#configuracion input,#configuracion select{background:#fff!important;color:#111827!important;border:1px solid #d1d5db!important;border-radius:8px!important;}
+/* Botones: principal verde azulado, los demás en contorno */
+#configuracion button{border-radius:8px!important;box-shadow:none!important;font-weight:700!important;}
+/* Auto-seguimiento: Desactivar en rojo de contorno, Activar es el principal */
+#configuracion button[onclick*="desactivarAutoSeguimientoUI"]{background:#fff!important;color:#dc2626!important;border:1px solid #fca5a5!important;}
+/* Resumen de correos (lo arma noa_config_ux.js): compacto, con los datos técnicos escondidos */
+#configuracion .nc-mail{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+#configuracion .nc-mail .nc-t{font-size:16px;font-weight:700;color:#12263f!important;}
+#configuracion .nc-mail .nc-s{font-size:13px;color:#6b7280!important;margin-top:2px;}
+#configuracion .nc-mail button{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;padding:9px 18px!important;}
+#configuracion details.nc-tec{margin-top:12px;}
+#configuracion details.nc-tec>summary{cursor:pointer;font-size:12px;font-weight:600;color:#6b7280!important;}

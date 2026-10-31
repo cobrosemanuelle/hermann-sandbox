@@ -1,0 +1,12 @@
+/* NOA · Respaldo en Configuración: tarjeta clara, mismo estilo del resto; todo en MAYÚSCULA */
+#configuracion .nr-card{text-transform:uppercase;}
+#configuracion .nr-card .nr-fila{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+#configuracion .nr-card .nr-t{font-size:16px;font-weight:700;color:#12263f!important;}
+#configuracion .nr-card .nr-s{font-size:13px;color:#6b7280!important;margin-top:2px;max-width:560px;}
+#configuracion .nr-card .nr-btn{background:#0d9488!important;color:#fff!important;border:1px solid #0d9488!important;padding:10px 20px!important;cursor:pointer;text-transform:uppercase;}
+#configuracion .nr-card .nr-btn:hover{background:#0f766e!important;}
+#configuracion .nr-card .nr-btn:disabled{opacity:.6;cursor:wait;}
+#configuracion .nr-card .nr-estado{margin-top:10px;font-size:13px;font-weight:600;color:#0f766e!important;}
+#configuracion .nr-card .nr-estado:empty{display:none;}
+#configuracion .nr-card .nr-estado.nr-malo{color:#dc2626!important;}
+#configuracion .nr-card .nr-ultimo{margin-top:6px;font-size:12px;color:#6b7280!important;}

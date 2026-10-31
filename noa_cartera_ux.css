@@ -1,0 +1,66 @@
+/* NOA · Cartera UX (capa encima de los estilos en línea que pinta noa_cartera). Paleta NOA clara. */
+#cartera-noa{background:#fff!important;border:1px solid #e5e7eb!important;box-shadow:none!important;border-radius:12px!important;color:#111827!important;overflow:hidden;}
+#cartera-noa>div:first-of-type{border-bottom:1px solid #e5e7eb!important;padding:18px 20px 14px!important;}
+#cartera-noa h2{color:#12263f!important;font-size:20px!important;}
+#cartera-noa h2 span,#cartera-noa h2 em{color:#0d9488!important;}
+/* Los 3 contadores ya están en el Dashboard y en las pestañas: fuera de aquí */
+#cartera-noa #kpis-cartera{display:none!important;}
+/* Pestañas */
+#cartera-noa .noa-tab{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;box-shadow:none!important;border-radius:999px!important;padding:7px 16px!important;font-weight:600!important;font-size:13px!important;}
+#cartera-noa .noa-tab.activo{background:#0d9488!important;color:#fff!important;border-color:#0d9488!important;}
+#cartera-noa #btn-nuevo-cliente{background:#0d9488!important;color:#fff!important;box-shadow:none!important;border-radius:8px!important;}
+/* Buscador y filtros */
+#cartera-noa input,#cartera-noa select{background:#fff!important;color:#111827!important;border:1px solid #d1d5db!important;border-radius:8px!important;}
+#cartera-noa #noa-search{padding:11px 14px!important;font-size:14px!important;}
+#cartera-noa label,#cartera-noa span{color:#6b7280;}
+#cartera-noa #stats{color:#374151!important;font-size:13px!important;}
+#cartera-noa details.noa-menu>summary,#cartera-noa button:not(.noa-tab):not(#btn-nuevo-cliente){background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;box-shadow:none!important;border-radius:8px!important;}
+#cartera-noa #btn-vista{background:#f0fdfa!important;color:#0f766e!important;border:1px solid #99f6e4!important;box-shadow:none!important;border-radius:8px!important;}
+#cartera-noa #btn-vista *{color:#0f766e!important;}
+/* Tabla */
+#cartera-noa #cartera-scroll{max-height:68vh;border-top:0;}
+#cartera-noa thead th{background:#f8fafc!important;color:#475569!important;font-size:11px!important;letter-spacing:.04em;border-bottom:1px solid #e5e7eb!important;position:sticky;top:0;z-index:3;}
+#cartera-noa tbody td{color:#111827!important;border-bottom:1px solid #f1f5f9!important;background:#fff;}
+#cartera-noa tbody tr:hover td{background:#f0fdfa!important;}
+/* Estado y Cliente quedan fijos al deslizar a la derecha */
+#cartera-noa table th:nth-child(2),#cartera-noa table td:nth-child(2){position:sticky;left:0;z-index:2;background:#fff;}
+#cartera-noa table th:nth-child(3),#cartera-noa table td:nth-child(3){position:sticky;left:120px;z-index:2;background:#fff;border-right:1px solid #e5e7eb!important;box-shadow:3px 0 4px -3px rgba(15,23,42,.12);}
+#cartera-noa thead th:nth-child(2),#cartera-noa thead th:nth-child(3){background:#f8fafc!important;z-index:4;}
+#cartera-noa tbody tr:hover td:nth-child(2),#cartera-noa tbody tr:hover td:nth-child(3){background:#f0fdfa!important;}
+/* Acciones: Pagar destaca, el resto discreto */
+#cartera-noa tbody td button{box-shadow:none!important;border-radius:6px!important;font-size:11px!important;padding:4px 8px!important;background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;}
+#cartera-noa #tbody-cartera td button:first-child{background:#0d9488!important;color:#fff!important;border-color:#0d9488!important;font-weight:700!important;}
+
+/* Encabezado personalizado: Cobros Emmanuel + V8 discreto en la esquina */
+.header h1{font-weight:700!important;letter-spacing:.3px;}
+.header p{opacity:.8;}
+.header .pro-badge{animation:none!important;background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.3);color:#fff!important;padding:4px 12px!important;font-size:11px!important;letter-spacing:1px;box-shadow:none!important;}
+#cartera-noa thead th[data-orden]{user-select:none;}
+#cartera-noa thead th[data-orden]:hover{background:#eef2f7!important;color:#12263f!important;}
+#cartera-noa thead th .noa-flecha{color:#0d9488;font-size:10px;}
+#cartera-noa thead th[data-orden]:not(.noa-activa)::after{content:"⇅";color:#94a3b8;font-size:11px;margin-left:5px;font-weight:400;}
+#cartera-noa thead th[data-orden]:not(.noa-activa):hover::after{color:#0d9488;}
+#cartera-noa thead th .noa-flecha{font-size:11px;}
+
+/* NOA · Cartera: barra de herramientas compacta (3 filas en vez de 5) */
+#cartera-noa>style+div{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:10px 10px!important;padding:14px 20px!important;}
+#cartera-noa>style+div>:nth-child(1){display:none!important;}
+#cartera-noa>style+div>:nth-child(3){flex:0 0 100%!important;order:1!important;}
+#cartera-noa>style+div>:nth-child(6){flex:0 0 100%!important;order:2!important;}
+#cartera-noa>style+div>:nth-child(4){display:contents!important;}
+#cartera-noa>style+div>:nth-child(4)>#noa-search{order:3!important;flex:1 1 260px!important;width:auto!important;min-width:200px;}
+#cartera-noa>style+div>:nth-child(5),#cartera-noa>style+div>:nth-child(7){display:contents!important;}
+#cartera-noa>style+div>:nth-child(5)>span,#cartera-noa>style+div>:nth-child(7)>span:not(#stats):not(#btn-vista){display:none!important;}
+#cartera-noa #menu-filtros{order:4!important;}
+#cartera-noa #menu-papelera{order:5!important;}
+#cartera-noa #btn-imprimir{order:6!important;}
+#cartera-noa #btn-vista{order:7!important;}
+#cartera-noa #filtro-mes-rapido,#cartera-noa #filtro-anio-rapido,#cartera-noa>style+div>:nth-child(5)>label,#cartera-noa #filtro-fecha-desde,#cartera-noa>style+div>:nth-child(5)>span,#cartera-noa #filtro-fecha-hasta,#cartera-noa>style+div>:nth-child(5)>button{order:10!important;}
+#cartera-noa #stats{order:20!important;margin-left:auto!important;}
+#cartera-noa #btn-more-top{order:21!important;}
+#cartera-noa>style+div::after{content:"";order:9;flex:0 0 100%;height:0;}
+#cartera.tab-content{padding-top:8px!important;}
+#cartera-noa{margin-top:10px!important;}
+#aviso-modo-prueba-wa{pointer-events:none!important;}
+/* noa-dialogos: el boton de paginar de arriba sobra (el de abajo hace lo mismo) */
+#cartera-noa #btn-more-top{display:none!important;}

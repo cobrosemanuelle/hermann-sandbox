@@ -1,0 +1,18 @@
+/* NOA · Formulario Nuevo cliente / Editar cliente UX: estilo claro igual que la ficha */
+#modal-cliente-noa{background:rgba(15,23,42,.45)!important;}
+#modal-cliente-noa>div{background:#fff!important;color:#111827!important;border:1px solid #e5e7eb!important;border-radius:14px!important;box-shadow:0 20px 50px rgba(15,23,42,.25)!important;}
+#modal-cliente-noa h2{color:#12263f!important;font-size:20px!important;}
+#modal-cliente-noa p{color:#6b7280!important;}
+#modal-cliente-noa #fc-x{background:transparent!important;color:#6b7280!important;border:0!important;box-shadow:none!important;font-size:26px!important;padding:0 6px!important;}
+#modal-cliente-noa #fc-x:hover{color:#12263f!important;}
+#modal-cliente-noa div[style*="#7DD3FC"]{color:#0f766e!important;border-bottom:1px solid #e5e7eb!important;letter-spacing:.03em;text-transform:uppercase;font-size:12px!important;}
+#modal-cliente-noa label{color:#374151!important;font-weight:600!important;font-size:13px!important;}
+#modal-cliente-noa label span{color:#dc2626!important;}
+#modal-cliente-noa input,#modal-cliente-noa select{background:#fff!important;color:#111827!important;border:1px solid #d1d5db!important;border-radius:8px!important;color-scheme:light!important;box-shadow:none!important;}
+#modal-cliente-noa input:focus,#modal-cliente-noa select:focus{border-color:#0d9488!important;outline:2px solid rgba(13,148,136,.2)!important;outline-offset:0;}
+#modal-cliente-noa input[readonly]{background:#f1f5f9!important;color:#475569!important;opacity:1!important;}
+#modal-cliente-noa input[style*="239, 68, 68"],#modal-cliente-noa select[style*="239, 68, 68"]{border-color:#dc2626!important;}
+#modal-cliente-noa #fc-error{background:#fef2f2!important;border:1px solid #fecaca!important;color:#b91c1c!important;}
+#modal-cliente-noa #fc-guardar{background:#0d9488!important;color:#fff!important;border:0!important;box-shadow:none!important;font-weight:700!important;}
+#modal-cliente-noa #fc-guardar:hover{background:#0f766e!important;}
+#modal-cliente-noa #fc-cancelar{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;box-shadow:none!important;font-weight:700!important;}

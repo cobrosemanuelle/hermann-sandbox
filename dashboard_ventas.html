@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Rendimiento de Ventas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #1152d4;
+      margin: 0;
+      color: #fff;
+    }
+    .dashboard-container {
+      max-width: 1080px;
+      margin: 32px auto;
+      padding: 24px;
+      background: #1152d4;
+      border-radius: 32px;
+      box-shadow: 0 2px 12px rgba(7,44,97, .08);
+    }
+    .dashboard-header h1 {
+      background: #e1f0fa;
+      color: #005;
+      padding: 24px 16px;
+      border-radius: 16px;
+      font-size: 2.2em;
+      margin-bottom: 32px;
+      font-weight: 800;
+      letter-spacing: -2px;
+    }
+    .dashboard-kpis {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+      justify-content: space-between;
+    }
+    .kpi-box {
+      background: #1e72e3;
+      border-radius: 12px;
+      padding: 24px 32px;
+      min-width: 220px;
+      flex: 1 1 200px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .kpi-box span {
+      font-size: 1.08em;
+      margin-bottom: 2px;
+      font-weight: 500;
+    }
+    .kpi-box h2 {
+      margin: 8px 0 4px 0;
+      font-size: 2em;
+      font-weight: 900;
+      color: #36ffad;
+      letter-spacing: -1px;
+    }
+
+    /* TOP RAZONES DE MORA */
+    .top-razones-container {
+      background: #e1f0fa;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .top-razones-header {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .top-razones-titulo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .top-razones-subtitulo {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin: 0;
+      font-weight: 500;
+    }
+    .razones-lista {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .razon-item {
+      background: white;
+      border-left: 5px solid;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+    .razon-item:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+    .razon-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .razon-icono {
+      font-size: 28px;
+      min-width: 40px;
+      text-align: center;
+    }
+    .razon-titulo-grupo { 
+      flex: 1; 
+      min-width: 200px; 
+    }
+    .razon-titulo {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin: 0;
+      line-height: 1.3;
+    }
+    .razon-descripcion {
+      font-size: 13px;
+      color: #7f8c8d;
+      margin: 4px 0 0 0;
+      line-height: 1.4;
+    }
+    .razon-accion-btn {
+      padding: 10px 16px;
+      border: 2px solid;
+      background-color: transparent;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .razon-accion-btn:hover {
+      background-color: #bee3f8;
+      color: #2c3e50;
+      transform: scale(1.05);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+      color: #2c3e50;
+    }
+    @keyframes slideUp {
+      from { 
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    .modal-content h2 {
+      margin: 0 0 16px 0;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .modal-content p {
+      color: #7f8c8d;
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0 0 20px 0;
+      text-align: center;
+    }
+    .modal-pasos {
+      text-align: left;
+      margin: 20px 0;
+    }
+    .modal-paso {
+      margin: 10px 0;
+      padding-left: 12px;
+      border-left: 3px solid #2b6cb0;
+      color: #2c3e50;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .modal-content button {
+      background: #2b6cb0;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+    .modal-content button:hover {
+      background: #2c5aa0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(43, 108, 176, 0.4);
+    }
+
+    .dashboard-alerts {
+      background: #e1f0fa;
+      color: #001a3a;
+      border-radius: 16px;
+      padding: 18px 28px;
+      margin-bottom: 32px;
+      max-width: 340px;
+      font-size: 1em;
+    }
+    .dashboard-alerts h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 1.15em;
+    }
+    .dashboard-alerts ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+    .dashboard-alerts li {
+      margin-bottom: 6px;
+      font-size: 1.04em;
+    }
+    .dashboard-trend {
+      background: #1e72e3;
+      padding: 24px 18px 32px 18px;
+      border-radius: 16px;
+      color: #fff;
+      margin-bottom: 0;
+      max-width: 550px;
+    }
+    .dashboard-trend h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.13em;
+      font-weight: 800;
+    }
+    .dashboard-trend canvas {
+      width: 100% !important;
+      height: 260px !important;
+    }
+    .dashboard-main-wrap {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Panel de Rendimiento de Ventas</h1>
+    </div>
+    <div class="dashboard-kpis">
+      <div class="kpi-box">
+        <span>Meta de Ventas Mensual</span>
+        <h2>$150k</h2>
+        <span>Ventas Actuales</span>
+        <h2>$120k</h2>
+      </div>
+      <div class="kpi-box">
+        <span>Cobranza Pendiente</span>
+        <h2>$35k</h2>
+      </div>
+      <div class="kpi-box">
+        <span>Tasa de Cobranza</span>
+        <h2>85%</h2>
+      </div>
+      <div class="kpi-box">
+        <span>Clientes Activos</span>
+        <h2>220</h2>
+        <span>Nuevos Clientes Este Mes</span>
+        <h2>15</h2>
+      </div>
+    </div>
+
+    <!-- TOP RAZONES DE MORA -->
+    <div class="top-razones-container">
+      <div class="top-razones-header">
+        <h2 class="top-razones-titulo">
+          <span>📌</span>
+          Top Razones de Mora
+        </h2>
+        <p class="top-razones-subtitulo">Análisis de los principales motivos de retraso en pagos</p>
+      </div>
+      <div class="razones-lista">
+        <div class="razon-item" style="border-left-color: #FF6B6B">
+          <div class="razon-header">
+            <span class="razon-icono">📋</span>
+            <div class="razon-titulo-grupo">
+              <h3 class="razon-titulo">Datos de contacto erróneos</h3>
+              <p class="razon-descripcion">Los datos registrados están desactualizados o incorrectos</p>
+            </div>
+            <button class="razon-accion-btn" style="border-color: #FF6B6B; color: #FF6B6B" onclick="abrirModalAccion('corregir')">
+              Corregir cliente
+            </button>
+          </div>
+        </div>
+        <div class="razon-item" style="border-left-color: #FFB444">
+          <div class="razon-header">
+            <span class="razon-icono">📱</span>
+            <div class="razon-titulo-grupo">
+              <h3 class="razon-titulo">Cliente no responde WhatsApp/email</h3>
+              <p class="razon-descripcion">Sin respuesta a intentos de contacto</p>
+            </div>
+            <button class="razon-accion-btn" style="border-color: #FFB444; color: #FFB444" onclick="abrirModalAccion('llamar')">
+              Llamar o programar visita
+            </button>
+          </div>
+        </div>
+        <div class="razon-item" style="border-left-color: #4ECDC4">
+          <div class="razon-header">
+            <span class="razon-icono">💰</span>
+            <div class="razon-titulo-grupo">
+              <h3 class="razon-titulo">Saldo/monto incorrecto</h3>
+              <p class="razon-descripcion">Discrepancia entre lo registrado y lo real</p>
+            </div>
+            <button class="razon-accion-btn" style="border-color: #4ECDC4; color: #4ECDC4" onclick="abrirModalAccion('actualizar')">
+              Actualizar cartera
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-main-wrap">
+      <div class="dashboard-alerts">
+        <h3>Alertas</h3>
+        <ul>
+          <li>Alertas Urgentes: <strong>3</strong></li>
+          <li>Facturas Vencidas: <strong>2</strong></li>
+          <li>Facturas Vencidas: <strong>2</strong></li>
+        </ul>
+      </div>
+
+      <div class="dashboard-trend">
+        <h3>Tendencia de Ventas Mensuales</h3>
+        <canvas id="salesTrendChart"></canvas>
+        <span style="display: block; margin-top: 10px; font-weight: 500;">Adquisición de Clientes</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Chart.js
+    const ctx = document.getElementById('salesTrendChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago'],
+        datasets: [
+          {
+            label: 'Ventas',
+            backgroundColor: '#36ffad',
+            borderColor: '#36c7ff',
+            borderWidth: 2,
+            data: [100, 200, 300, 400, 350, 500, 600, 750]
+          },
+          {
+            label: 'Clientes',
+            backgroundColor: 'rgba(30, 114, 227, .7)',
+            borderColor: '#1152d4',
+            type: 'line',
+            fill: false,
+            data: [15, 20, 25, 30, 28, 32, 36, 40]
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' }
+        },
+        scales: {
+          y: { beginAtZero: true },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // MODALES DE TOP RAZONES
+    const RAZONES_DATA = {
+      'corregir': {
+        icono: '📋',
+        titulo: 'Datos de contacto erróneos',
+        descripcion: 'Los datos registrados están desactualizados o incorrectos.',
+        pasos: [
+          'Busca el cliente en la sección Cartera',
+          'Verifica el teléfono y email actual',
+          'Contacta por otro medio si es posible',
+          'Actualiza los datos en el sistema',
+          'Envía mensaje de confirmación al cliente'
+        ]
+      },
+      'llamar': {
+        icono: '📱',
+        titulo: 'Cliente no responde WhatsApp/email',
+        descripcion: 'Sin respuesta a intentos de contacto digital.',
+        pasos: [
+          'Llama al teléfono registrado',
+          'Si no contesta, deja mensaje de voz',
+          'Programa visita presencial si es necesario',
+          'Registra el contacto en historial',
+          'Establece fecha de seguimiento'
+        ]
+      },
+      'actualizar': {
+        icono: '💰',
+        titulo: 'Saldo/monto incorrecto',
+        descripcion: 'Discrepancia entre lo registrado y lo real.',
+        pasos: [
+          'Revisa la póliza original del cliente',
+          'Verifica el saldo con la aseguradora',
+          'Actualiza el monto en el sistema',
+          'Notifica al cliente del cambio',
+          'Confirma recepción de la actualización'
+        ]
+      }
+    };
+
+    function abrirModalAccion(tipo) {
+      const razon = RAZONES_DATA[tipo];
+      if (!razon) return;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.onclick = function() { document.body.removeChild(overlay); };
+
+      const modal = document.createElement('div');
+      modal.className = 'modal-content';
+      modal.onclick = function(e) { e.stopPropagation(); };
+
+      const pasosHTML = razon.pasos.map(paso => 
+        `<div class="modal-paso">• ${paso}</div>`
+      ).join('');
+
+      modal.innerHTML = `
+        <div style="font-size:42px; text-align:center; margin-bottom:16px;">${razon.icono}</div>
+        <h2>${razon.titulo}</h2>
+        <p>${razon.descripcion}</p>
+        <div class="modal-pasos">${pasosHTML}</div>
+        <button onclick="this.closest('.modal-overlay').remove()">✓ Entendido</button>
+      `;
+
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+    }
+  </script>
+</body>
+</html>

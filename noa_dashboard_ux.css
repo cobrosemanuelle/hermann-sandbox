@@ -1,0 +1,71 @@
+/* NOA UX - capa nueva, se carga despues de noa_minimal.css */
+.nav-tabs{display:flex!important;flex-wrap:wrap!important;gap:2px!important;background:#fff!important;border-bottom:1px solid #e5e7eb!important;padding:0 8px!important;overflow:visible!important;}
+.nav-tabs .nav-tab,.nav-tabs summary.nav-mas-btn{flex:none!important;min-width:0!important;background:transparent!important;color:#6b7280!important;padding:14px 16px!important;border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;font-size:14px!important;font-weight:600!important;cursor:pointer;white-space:nowrap;transform:none!important;}
+.nav-tabs .nav-tab:hover,.nav-tabs summary.nav-mas-btn:hover{background:#f3f4f6!important;color:#111827!important;transform:none!important;}
+.nav-tabs .nav-tab.active{color:#1d4ed8!important;border-bottom-color:#2563eb!important;background:transparent!important;}
+.nav-mas{position:relative;}
+.nav-mas summary{list-style:none;}
+.nav-mas summary::-webkit-details-marker{display:none;}
+.nav-mas-menu{position:absolute;top:100%;left:0;z-index:50;min-width:210px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:6px;display:flex;flex-direction:column;}
+.nav-mas-menu .nav-tab{text-align:left!important;border-bottom:0!important;border-radius:6px!important;padding:10px 12px!important;}
+.nav-mas:has(.nav-tab.active) summary.nav-mas-btn{color:#1d4ed8!important;border-bottom-color:#2563eb!important;}
+.noa-kpis{display:grid!important;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.noa-kpi{background:#fff;border:1px solid #e5e7eb;border-left:5px solid var(--k,#3b82f6);border-radius:10px;padding:18px 20px;}
+.noa-kpi.clic{cursor:pointer;}
+.noa-kpi.clic:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.noa-kpi-num{font-size:2.4em;font-weight:800;line-height:1.1;color:#111827;}
+.noa-kpi-et{margin-top:4px;font-size:.9em;font-weight:600;color:#6b7280;}
+@media (max-width:700px){.noa-kpis{grid-template-columns:1fr;}}
+.noa-cal{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px 18px;margin-bottom:16px;}
+.noa-cal .noa-cal-t{font-size:16px;font-weight:700;color:#111827;margin:0;}
+.noa-cal .noa-cal-s{font-size:12px;color:#6b7280;margin:2px 0 8px;}
+.noa-cal-row{display:grid;grid-template-columns:1fr 130px auto;gap:14px;align-items:center;padding:11px 0;border-top:1px solid #f1f5f9;}
+.noa-cal-txt strong{display:block;font-size:14px;color:#111827;}
+.noa-cal-txt small{display:block;font-size:12px;color:#6b7280;margin-top:1px;}
+.noa-cal-n b{display:block;font-size:15px;color:#111827;}
+.noa-cal-n .noa-bar{display:block;height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:5px;}
+.noa-cal-n .noa-bar u{display:block;height:100%;width:0;background:var(--c,#3b82f6);transition:width .4s;text-decoration:none;}
+.noa-cal-acc{display:flex;align-items:center;gap:12px;justify-content:flex-end;}
+.noa-cal .noa-rev{background:#fff!important;color:#1d4ed8!important;border:1px solid #93c5fd!important;padding:6px 14px!important;font-size:12px!important;border-radius:6px!important;}
+.noa-cal .noa-rev:hover{background:#eff6ff!important;}
+.noa-cal .noa-xls{font-size:12px;color:#6b7280;text-decoration:underline;}
+.noa-cal .noa-xls:hover{color:#1d4ed8;}
+@media (max-width:700px){.noa-cal-row{grid-template-columns:1fr;}.noa-cal-acc{justify-content:flex-start;}}
+#dashboard .dashboard-main-wrap{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;gap:16px!important;align-items:stretch!important;margin-top:0!important;}
+#dashboard .dashboard-main-wrap>*{width:100%!important;min-width:0!important;flex:none!important;}
+#dashboard .dashboard-main-wrap>:first-child{order:2;}
+#dashboard .dashboard-main-wrap>:last-child{order:1;}
+#dashboard .semaforo-cobros{background:none!important;border:0!important;padding:0!important;margin:0!important;min-width:0!important;}
+#dashboard .semaforo-cobros>*+*{margin-top:16px;}
+#dashboard .comparativo-cobros{min-width:0!important;margin-bottom:0!important;}
+#dashboard .trend-container{margin-top:0!important;}
+#dashboard .noa-estado{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px 18px;}
+#dashboard .noa-estado h3{font-size:16px!important;font-weight:700;color:#111827!important;margin:0 0 12px!important;}
+#dashboard .noa-estado li span{color:#374151!important;}
+#dashboard .noa-estado .tag-semaforo.azul{color:#1d4ed8!important;background:#dbeafe!important;}
+/* PALETA NOA: base blanca/gris, navy + teal + ambar; rojo solo para lo grave */
+:root{--navy:#12263f;--teal:#0d9488;--teal-d:#0f766e;--amber:#d97706;--red:#dc2626;--ink:#111827;--mut:#6b7280;--line:#e5e7eb;}
+html body{background:#f3f4f6!important;}
+button,.btn{background:var(--teal)!important;}
+button:hover,.btn:hover{background:var(--teal-d)!important;}
+.nav-tabs .nav-tab.active{color:var(--teal-d)!important;border-bottom-color:var(--teal)!important;}
+.nav-mas:has(.nav-tab.active) summary.nav-mas-btn{color:var(--teal-d)!important;border-bottom-color:var(--teal)!important;}
+.noa-cal .noa-rev{color:var(--teal-d)!important;border-color:#99f6e4!important;}
+.noa-cal .noa-rev:hover{background:#f0fdfa!important;}
+.noa-cal .noa-xls:hover{color:var(--teal-d);}
+#dashboard .noa-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+#dashboard .noa-urgente{border-left:5px solid var(--red);}
+#dashboard .noa-card-t{margin:0 0 12px;font-size:16px;font-weight:700;color:var(--ink);}
+#dashboard .noa-urgente .noa-card-t{color:#b91c1c;}
+#dashboard .comparativo-cobros{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line);border-radius:12px!important;padding:16px 18px!important;}
+#dashboard .comparativo-cobros h2{font-size:16px!important;color:var(--ink)!important;margin:0!important;}
+#dashboard .comparativo-monedas{display:grid!important;grid-template-columns:repeat(2,1fr);gap:8px 24px;font-size:14px!important;margin-top:12px;}
+#dashboard .comparativo-monedas span{margin:0!important;color:var(--mut)!important;}
+#dashboard .comparativo-monedas .cob-ok strong{color:#0f766e;font-size:1.3em;}
+#dashboard .comparativo-monedas .cob-pend strong{color:#b45309;font-size:1.3em;}
+#dashboard .noa-sel{background:#fff;color:var(--ink);border:1px solid #d1d5db;padding:6px 12px;border-radius:8px;font-size:13px;cursor:pointer;}
+#dashboard .trend-container{background:#fff!important;border:1px solid var(--line)!important;border-radius:12px!important;padding:16px 18px!important;}
+
+/* Calidad de datos: columnas fijas para que Revisar y las barras queden alineadas en todas las filas */
+#dashboard .noa-cal-row{grid-template-columns:1fr 130px 150px!important;}
+#dashboard .noa-cal-acc{display:flex!important;align-items:center;gap:12px;justify-content:flex-start!important;}

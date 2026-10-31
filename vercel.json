@@ -1,0 +1,21 @@
+{
+  "outputDirectory": "frontend",
+  "crons": [
+    {
+      "path": "/api/respaldo_doble?t=md",
+      "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/respaldo_doble?t=pm",
+      "schedule": "0 1 * * *"
+    }
+  ],
+  "functions": {
+    "api/respaldo.js": {
+      "maxDuration": 60
+    },
+    "api/respaldo_doble.js": {
+      "maxDuration": 60
+    }
+  }
+}

@@ -1,0 +1,46 @@
+/* NOA · Cross-Selling y Machine Learning UX: estilo claro igual que el resto */
+#ia>h2,#ml>h2{color:#12263f!important;font-size:20px!important;margin:0 0 14px!important;}
+#ia h3,#ml h3{color:#12263f!important;}
+/* ---- Cross-Selling ---- */
+#ia div[style*="border:2px solid #8b5cf6"]{background:#fff!important;border:1px solid #e5e7eb!important;border-radius:12px!important;padding:20px 22px!important;}
+#ia div[style*="border:2px solid #8b5cf6"]>h3{font-size:16px!important;margin:0 0 14px!important;}
+#ia #ia-crossselling div[style*="#94A3B8"],#ia #ia-crossselling div[style*="#64748b"]{color:#6b7280!important;}
+#ia .ia-vacio{text-align:center;padding:34px 10px;color:#6b7280;font-size:14px;}
+#ia #cs-filtros{border-bottom-color:#e5e7eb!important;}
+#ia #cs-filtros button{background:#fff!important;border-radius:999px!important;box-shadow:none!important;}
+#ia #cs-filtros button[data-filtro=""]{background:#12263f!important;color:#fff!important;border:1px solid #12263f!important;}
+#ia #cs-filtros button[data-filtro="Momento Ideal"]{color:#0f766e!important;border:1px solid #99f6e4!important;}
+#ia #cs-filtros button[data-filtro="Considerar"]{color:#b45309!important;border:1px solid #fcd34d!important;}
+#ia #cs-filtros button[data-filtro="Prioridad Cobro"]{color:#b91c1c!important;border:1px solid #fca5a5!important;}
+#ia #ia-crossselling div[style*="background:#1e293b;border-radius:14px"]{background:#fff!important;border:1px solid #e5e7eb!important;border-radius:12px!important;}
+#ia #ia-crossselling div[data-nombre]{color:#12263f!important;}
+#ia #ia-crossselling div[style*="color:#7c3aed"]{color:#0f766e!important;}
+#ia #ia-crossselling div[style*="background:#f8fafc"]{border-color:#e5e7eb!important;}
+#ia #ia-crossselling button{border-radius:8px!important;box-shadow:none!important;}
+#ia #ia-crossselling div[style*="padding:40px"] button{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;padding:8px 18px!important;font-weight:700!important;}
+#ia .cs-wa-btn{background:#0d9488!important;color:#fff!important;border:0!important;}
+#ia .cs-email-btn{background:#fff!important;color:#12263f!important;border:1px solid #cbd5e1!important;}
+#ia .cs-seg-btn[data-estado="contactado"]{background:#fff!important;color:#b45309!important;border:1px solid #fcd34d!important;}
+#ia .cs-seg-btn[data-estado="adoptado"]{background:#fff!important;color:#0f766e!important;border:1px solid #99f6e4!important;}
+#ia .cs-seg-btn[data-estado="descartado"],#ia .cs-reset-btn{background:#fff!important;color:#6b7280!important;border:1px solid #d1d5db!important;}
+#ia #ia-crossselling span[style*="rgba(0,0,0,0.3)"]{background:#f1f5f9!important;}
+/* Botones de actualizar (los dos) en contorno, sin morado */
+#ia>div[style*="text-align:center"] button,#ml>div[style*="text-align:center"] button{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;border-radius:8px!important;box-shadow:none!important;padding:10px 20px!important;font-size:14px!important;font-weight:700!important;}
+/* ---- Machine Learning ---- */
+#ml div[style*="linear-gradient(135deg,#1e293b"]{background:#fff!important;border:1px solid #e5e7eb!important;border-radius:12px!important;box-shadow:none!important;}
+#ml div[style*="linear-gradient(135deg,#064e3b"]{background:#fff!important;border:1px solid #e5e7eb!important;border-left:4px solid #0d9488!important;border-radius:12px!important;}
+#ml div[style*="linear-gradient(135deg,#7f1d1d"]{background:#fff!important;border:1px solid #e5e7eb!important;border-left:4px solid #dc2626!important;border-radius:12px!important;}
+#ml div[style*="color:#94A3B8"],#ml span[style*="color:#94A3B8"]{color:#6b7280!important;}
+#ml div[style*="color:#f59e0b"]{color:#d97706!important;}
+#ml div[style*="color:#10b981"],#ml span[style*="color:#10b981"]{color:#0f766e!important;}
+#ml div[style*="color:#ef4444"]{color:#dc2626!important;}
+#ml div[style*="color:#22c55e"]{color:#0f766e!important;}
+#ml div[style*="color:#3b82f6"]{color:#12263f!important;}
+#ml div[style*="color:#a855f7"]{color:#475569!important;}
+#ml h4{color:#12263f!important;font-size:15px!important;}
+#ml span[style*="color:#fff"]{color:#12263f!important;}
+#ml div[style*="rgba(255,255,255,0.1)"]{border-bottom-color:#eef2f7!important;}
+#ml div[style*="background:#0f172a"]{background:#e5e7eb!important;}
+#ml div[style*="1d4ed8"]{background:#12263f!important;}
+#ml div[style*="16a34a"]{background:#0d9488!important;}
+#ml div[style*="background:#7f1d1d"]{background:#fef2f2!important;color:#b91c1c!important;border:1px solid #fecaca!important;}

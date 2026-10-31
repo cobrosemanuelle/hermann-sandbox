@@ -1,0 +1,200 @@
+/* TopRazonesDeMora.css */
+.top-razones-container {
+  background: #f7fbfd;
+  border-radius: 16px;
+  padding: 28px;
+  margin: 24px 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.top-razones-header {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.top-razones-titulo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.icono-titulo {
+  font-size: 28px;
+}
+
+.top-razones-subtitulo {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+  font-weight: 500;
+}
+
+.razones-lista {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.razon-item {
+  background: white;
+  border-left: 5px solid;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.razon-item:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.razon-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.razon-icono {
+  font-size: 28px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.razon-titulo-grupo { 
+  flex: 1; 
+  min-width: 200px; 
+}
+
+.razon-titulo {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.razon-descripcion {
+  font-size: 13px;
+  color: #7f8c8d;
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+}
+
+.razon-accion-btn {
+  align-self: flex-start;
+  padding: 10px 16px;
+  border: 2px solid;
+  background-color: transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+.razon-accion-btn:hover {
+  background-color: #bee3f8;
+  color: #2c3e50;
+  transform: scale(1.05);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  margin: 0 0 16px 0;
+  color: #2c3e50;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.modal-content p {
+  color: #7f8c8d;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.modal-content button {
+  margin-top: 24px;
+  background: #2b6cb0;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.modal-content button:hover {
+  background: #2c5aa0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.4);
+}
+
+@media (max-width: 768px) {
+  .top-razones-container {
+    padding: 20px;
+    margin: 16px 0;
+  }
+  
+  .razon-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .razon-accion-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,27 @@
+/* NOA · Historial Pagos UX: mismo estilo claro que Dashboard y Cartera (capa encima de los estilos en línea) */
+#historial-pagos-tab>div{background:#fff!important;border:1px solid #e5e7eb!important;box-shadow:none!important;border-radius:12px!important;color:#111827!important;overflow:hidden;}
+#historial-pagos-tab>div>div:first-child{border-bottom:1px solid #e5e7eb!important;padding:18px 20px!important;}
+#historial-pagos-tab h2{color:#12263f!important;font-size:20px!important;}
+#historial-pagos-tab h2 span{color:#0d9488!important;}
+#historial-pagos-tab label{color:#6b7280!important;}
+#historial-pagos-tab select,#historial-pagos-tab input{background:#fff!important;color:#111827!important;border:1px solid #d1d5db!important;border-radius:8px!important;}
+#historial-pagos-tab>div>div:first-child div{color:#6b7280;}
+#historial-pagos-tab button{background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;box-shadow:none!important;border-radius:8px!important;}
+#historial-pagos-tab button[onclick*="exportarPagosExcel"]{background:#0d9488!important;color:#fff!important;border-color:#0d9488!important;}
+/* Barra de búsqueda y fechas */
+#historial-pagos-tab #noa-hp-buscar{padding:11px 14px!important;}
+#historial-pagos-tab #noa-hp-buscar,#historial-pagos-tab #noa-hp-desde{margin-left:0;}
+#historial-pagos-tab>div>div:first-child+div,#historial-pagos-tab>div>div[style*="flex-wrap"]{padding:12px 20px!important;margin:0!important;border-bottom:1px solid #f1f5f9;}
+#historial-pagos-tab #noa-hp-cuenta{color:#374151!important;font-size:13px!important;}
+/* Tabla */
+#historial-pagos-tab thead tr{background:#f8fafc!important;}
+#historial-pagos-tab thead th{background:#f8fafc!important;color:#475569!important;font-size:11px!important;letter-spacing:.04em;border-bottom:1px solid #e5e7eb!important;}
+#historial-pagos-tab tbody tr{border-bottom:1px solid #f1f5f9!important;}
+#historial-pagos-tab tbody tr:hover{background:#f0fdfa!important;}
+#historial-pagos-tab tbody td{color:#111827!important;border-bottom:1px solid #f1f5f9!important;background:transparent!important;}
+#historial-pagos-tab tbody td:nth-child(3),#historial-pagos-tab tbody td:nth-child(4){color:#6b7280!important;}
+#historial-pagos-tab tbody td:nth-child(5){color:#0f766e!important;font-weight:700!important;}
+/* Totales al pie */
+#historial-pagos-tab [style*="border-top:1px solid #334155"]{background:#f8fafc!important;border-top:1px solid #e5e7eb!important;}
+#historial-pagos-tab [style*="font-size:24px"]{color:#12263f!important;}
+#historial-pagos-tab [style*="font-size:12px"]{color:#6b7280;}

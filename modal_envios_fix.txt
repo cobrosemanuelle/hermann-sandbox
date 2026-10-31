@@ -1,0 +1,12 @@
+Línea 91-93 (función enviarIndividual):
+CAMBIAR:
+  const { clientes, mensaje } = window.enviosData;
+  const cliente = clientes[index];
+
+POR:
+  const { clientes, mensaje } = window.enviosData || {};
+  if (!clientes || !clientes[index]) {
+    console.error('No hay datos de envío');
+    return;
+  }
+  const cliente = clientes[index];

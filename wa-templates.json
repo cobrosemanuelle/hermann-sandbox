@@ -1,0 +1,7 @@
+{
+  "templates": {
+    "primer_recordatorio": "🔔 *Aviso de Vencimiento de Póliza*\n\nEstimado *{nombre}*,\n\n🏢 {aseguradora}\n📋 Póliza: *{poliza}*\n🚗 {objeto_asegurado} | 🔖 {placa}\n\n📅 Vence: *{vencimiento}*\n💳 Pago: {periodicidad}\n💰 Monto: *{monto}*\n📅 Límite de pago: *{fecha_limite}*\n\n⚠️ Después del período de gracia de *10 días*, la póliza quedará inactiva y sin cobertura.\n\n📩 Responder a mi corredor",
+    "segundo_recordatorio": "⏰ *Recordatorio Urgente de Pago*\n\nEstimado *{nombre}*,\n\n🏢 {aseguradora}\n📋 Póliza: *{poliza}*\n🚗 {objeto_asegurado} | 🔖 {placa}\n\nSu pago sigue *pendiente*:\n💰 Monto: *{monto}*\n📅 Límite de pago: *{fecha_limite}*\n\n⚠️ Está muy cerca de quedar sin cobertura. Le recomendamos regularizar su pago hoy mismo.\n\n📩 Responder a mi corredor",
+    "tercer_recordatorio": "🚨 *Último Aviso - Póliza en Riesgo*\n\nEstimado *{nombre}*,\n\n🏢 {aseguradora}\n📋 Póliza: *{poliza}*\n🚗 {objeto_asegurado} | 🔖 {placa}\n\n📅 Fecha límite: *{fecha_limite}* (HOY o ya vencida)\n💰 Monto pendiente: *{monto}*\n\n🔴 Si no se regulariza el pago, la póliza quedará *inactiva y sin cobertura* de inmediato.\n\n📩 Responder a mi corredor para evitar la suspensión."
+  }
+}

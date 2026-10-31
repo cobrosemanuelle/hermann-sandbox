@@ -1,0 +1,353 @@
+/* NOA MINIMAL - MARCA BLANCA PROFESIONAL */
+
+/* RESET COMPLETO */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  line-height: 1.5;
+}
+
+/* HEADER */
+.header {
+  background: #1f2937 !important;
+  color: #ffffff !important;
+  padding: 20px 40px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.header h1 {
+  color: #ffffff !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+/* USER INFO - Esquina superior derecha fija */
+.user-info {
+  position: fixed !important;
+  top: 0 !important;
+  right: 20px !important;
+  background: rgba(31, 41, 55, 0.95) !important;
+  color: #ffffff !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.user-info button {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 4px !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+}
+
+/* TABS/NAV */
+nav, .tabs {
+  background: #f9fafb !important;
+  padding: 16px 40px !important;
+  border-bottom: 2px solid #e5e7eb !important;
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+.tab, nav button {
+  background: transparent !important;
+  border: none !important;
+  color: #6b7280 !important;
+  padding: 10px 16px !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.tab:hover, nav button:hover {
+  background: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+.tab.active, .tab-active {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* MAIN CONTENT */
+.container, .content {
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 32px 40px !important;
+}
+
+/* CARDS */
+.card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 24px !important;
+  margin-bottom: 16px !important;
+}
+
+.card h2 {
+  color: #1f2937 !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+}
+
+.card p {
+  color: #6b7280 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* INPUTS */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea {
+  width: 100% !important;
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  padding: 10px 12px !important;
+  font-size: 14px !important;
+  color: #1f2937 !important;
+  font-weight: 500 !important;
+}
+
+input:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+input::placeholder {
+  color: #9ca3af !important;
+}
+
+/* TABLA */
+table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+thead {
+  background: #f9fafb !important;
+}
+
+th {
+  padding: 12px 16px !important;
+  text-align: left !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #374151 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+td {
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  color: #1f2937 !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+
+tr:hover {
+  background: #f9fafb !important;
+}
+
+/* BOTONES */
+button, .btn {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+button:hover {
+  background: #2563eb !important;
+}
+
+/* BOTONES PEQUEÑOS (iconos) */
+.noa-icon-btn {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+}
+
+/* BADGES */
+.badge-ok, .badge-pagado {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  padding: 4px 10px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.badge-pending, .badge-pendiente {
+  background: #fffbeb !important;
+  color: #92400e !important;
+  padding: 4px 10px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  border: 1px solid #fde68a !important;
+}
+
+/* CHECKBOXES */
+input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  cursor: pointer !important;
+}
+
+/* LOGIN */
+.login-container {
+  background: #1f2937 !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.login-box {
+  background: #ffffff !important;
+  padding: 40px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+  width: 100% !important;
+  max-width: 400px !important;
+}
+
+/* TRANSICIONES SUAVES */
+* {
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease !important;
+}
+
+/* FIX 1: USER INFO - Más pequeña y menos intrusiva */
+.user-info {
+  position: fixed !important;
+  top: 0 !important;
+  right: 10px !important;
+  background: rgba(31, 41, 55, 0.9) !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  gap: 8px !important;
+  z-index: 9999 !important;
+}
+
+.user-info button {
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+}
+
+/* FIX 2: TABLA - Headers sticky */
+thead {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: #f9fafb !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* FIX 3: CAJAS más angostas */
+.card {
+  max-width: 280px !important;
+  display: inline-block !important;
+  margin: 8px !important;
+  vertical-align: top !important;
+}
+
+/* FIX 4: QUITAR verde configuración */
+.configuracion-container,
+[class*="config"],
+.config-section {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.config-section h2,
+.config-section h3 {
+  color: #1f2937 !important;
+  background: transparent !important;
+}
+
+.config-box {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+/* FIX 5: INPUTS - Texto negro claro cuando escribís */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #d1d5db !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+}
+
+input::placeholder {
+  color: #9ca3af !important;
+  font-weight: 400 !important;
+}
+
+input:focus {
+  color: #000000 !important;
+  background: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+/* TABLA - Celdas más angostas */
+td, th {
+  max-width: 180px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* BOTONES ACCIÓN más pequeños */
+.noa-icon-btn,
+button[onclick*="Ver"],
+button[onclick*="pagar"] {
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  margin: 2px !important;
+}
+/* Cache bust Fri Dec  5 07:55:37 CST 2025 */

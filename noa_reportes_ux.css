@@ -1,0 +1,8 @@
+/* NOA · Reportes UX: estilo claro igual que Dashboard, Cartera y Pagos */
+#reportes>h2{color:#12263f!important;font-size:20px!important;margin:0 0 14px!important;}
+#reportes>div[style*="#1e293b"]{background:#fff!important;border:1px solid #e5e7eb!important;border-radius:12px!important;padding:14px 20px!important;}
+#reportes>div[style*="#1e293b"] label,#reportes>div[style*="#1e293b"] span{color:#6b7280!important;}
+#reportes select{background:#fff!important;color:#111827!important;border:1px solid #d1d5db!important;border-radius:8px!important;}
+#reportes>div[style*="justify-content:center"]{justify-content:flex-end!important;margin-top:20px!important;}
+#reportes>div[style*="justify-content:center"] button{border-radius:8px!important;padding:10px 20px!important;font-size:14px!important;font-weight:700!important;box-shadow:none!important;background:#fff!important;color:#374151!important;border:1px solid #d1d5db!important;}
+#reportes>div[style*="justify-content:center"] button[onclick*="exportarReporteCompleto"]{background:#0d9488!important;color:#fff!important;border-color:#0d9488!important;}

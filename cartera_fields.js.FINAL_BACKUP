@@ -1,0 +1,153 @@
+(()=>{
+const CAMPOS=[
+{k:'asegurado',l:'Asegurado',s:['asegurado','cliente','nombre','tomador']},
+{k:'identificacion',l:'Identificación',s:['identificación','cedula','cédula','id']},
+{k:'poliza',l:'Póliza',s:['poliza','póliza','# poliza','numero poliza']},
+{k:'telefono',l:'Teléfono',s:['teléfono','telefono','celular','whatsapp']},
+{k:'correo',l:'Email',s:['correo','email','mail']},
+{k:'periodicidad',l:'Periodicidad',s:['periodicidad','frecuencia','periodo pago']},
+{k:'desde',l:'Desde',s:['desde','vigencia desde','fecha desde']},
+{k:'hasta',l:'Hasta',s:['hasta','vigencia hasta','vence','fecha hasta']},
+{k:'moneda',l:'Moneda',s:['moneda','currency']},
+{k:'prima',l:'Prima (IVA incl.)',s:['prima','prima total','monto asegurado']},
+{k:'placa',l:'Objeto Asegurado',s:['placa','placa/folio','matricula','objeto']},
+{k:'aseguradora',l:'Aseguradora',s:['aseguradora','compañía']},
+{k:'estado',l:'Estado Póliza',s:['estado','status']}
+];
+const NOA={bg:'#111827',panel:'#1F2937',fg:'#FFFFFF',muted:'#CBD5E1',accent:'#0EA5E9',ok:'#10B981',warn:'#F59E0B',err:'#EF4444',radius:'14px',shadow:'0 10px 30px rgba(0,0,0,.25)'};
+const norm=s=>(s==null?'':String(s)).normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase().trim();
+function mapCol(h){const n=norm(h);for(let c of CAMPOS){if(c.s.some(x=>norm(x)===n))return c.k;}return null;}
+function buildCols(raw){const map=new Map();raw.forEach(h=>{const k=mapCol(h);if(k)map.set(k,h);});const out=[];out.push({key:'estado_pago',label:'Estado Pago'});CAMPOS.forEach(c=>{if(map.has(c.k))out.push({key:c.k,label:c.l,raw:map.get(c.k)});});out.push({key:'acciones',label:'Acciones'});return out;}
+function parseRows(csv){const idxMap=new Map();csv.cols.forEach((h,i)=>{const k=mapCol(h);if(k)idxMap.set(k,i);});return csv.data.map((row,idx)=>{const o={_id:idx};idxMap.forEach((i,k)=>{o[k]=row[csv.cols[i]]||'';});o._pagado=false;return o;});}
+let ALL=[],COLS=[],FILTER='TODO';const SZ=50;
+function excelDate(v){const n=Number(v);if(!isNaN(n)&&n>1000&&n<100000){const d=new Date((n-25569)*86400*1000);if(!isNaN(d.getTime())){const dd=String(d.getUTCDate()).padStart(2,'0');const mm=String(d.getUTCMonth()+1).padStart(2,'0');const yy=d.getUTCFullYear();return `${dd}/${mm}/${yy}`;}}return v;}
+function getFiltered(){if(FILTER==='CRC')return ALL.filter(r=>norm(r.moneda||'crc').includes('crc')||norm(r.moneda||'crc').includes('colon'));if(FILTER==='USD')return ALL.filter(r=>norm(r.moneda||'').includes('usd')||norm(r.moneda||'').includes('dolar'));return ALL;}
+function getCurrentTab(){const tabs=document.querySelectorAll('.tab-content');for(let t of tabs){if(t.classList.contains('active'))return t.id;}return null;}
+function host(){
+  const tabId=getCurrentTab();
+  if(tabId!=='cartera')return null;
+  let container=document.getElementById('cartera');
+  if(!container)return null;
+  let w=container.querySelector('#cartera-noa');
+  if(!w){
+    w=document.createElement('div');
+    w.id='cartera-noa';
+    w.style.cssText=`background:${NOA.panel};border-radius:${NOA.radius};box-shadow:${NOA.shadow};margin:20px 0;overflow:hidden`;
+    w.innerHTML=`<style>.noa-btn{background:linear-gradient(135deg,${NOA.accent},#0284c7);color:${NOA.fg};border:none;padding:10px 20px;border-radius:${NOA.radius};font-weight:600;font-size:14px;cursor:pointer;transition:all .3s;box-shadow:0 4px 12px rgba(14,165,233,.3)}.noa-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,165,233,.5)}.noa-btn:active{transform:translateY(0)}.noa-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap}.badge-ok{background:rgba(16,185,129,.15);color:${NOA.ok};border:1px solid ${NOA.ok}}.badge-pending{background:rgba(245,158,11,.15);color:${NOA.warn};border:1px solid ${NOA.warn}}.noa-table{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}.noa-table th{background:${NOA.bg};color:${NOA.muted};text-align:left;padding:12px 16px;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0;border-bottom:2px solid ${NOA.accent}}.noa-table td{padding:12px 16px;border-bottom:1px solid #334155;transition:background .2s}.noa-table tr:hover td{background:rgba(14,165,233,.05)}.noa-icon-btn{background:transparent;border:1px solid #334155;color:${NOA.muted};padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s}.noa-icon-btn:hover{border-color:${NOA.accent};color:${NOA.accent};background:rgba(14,165,233,.1)}.noa-action-btn{background:linear-gradient(135deg,#10B981,#059669);color:white;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}.noa-action-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(16,185,129,.4)}</style><div style="padding:20px;border-bottom:1px solid #334155"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h2 style="margin:0;color:${NOA.fg};font-size:24px;font-weight:700">Cartera <span style="color:${NOA.accent}">NOA</span></h2><div style="display:flex;gap:8px"><button id="btn-todo" class="noa-btn">📊 Todas</button><button id="btn-crc" class="noa-btn">₡ Colones</button><button id="btn-usd" class="noa-btn">$ Dólares</button></div></div><div id="stats" style="color:${NOA.muted};font-size:14px"></div></div><div style="overflow-x:auto;max-height:600px"><table class="noa-table"><thead id="thead-cartera"></thead><tbody id="tbody-cartera"></tbody></table></div><div style="padding:20px;text-align:center;border-top:1px solid #334155"><button id="btn-more" class="noa-btn" style="display:none">Cargar 50 más</button></div>`;
+    container.appendChild(w);
+  }
+  return w;
+}
+function hdr(){
+  const h=host();if(!h)return;
+  const thead=h.querySelector('#thead-cartera');
+  if(!thead)return;
+  const headers=COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
+  thead.innerHTML='<tr>'+headers+'</tr>';
+}
+function fmt(v,m){const n=Number(String(v).replace(/[^\d.-]/g,''))||0;try{return new Intl.NumberFormat('es-CR',{style:'currency',currency:m||'CRC',maximumFractionDigits:0}).format(n);}catch{return n.toLocaleString();}}
+function calcNext(desde,per){
+  const parts=desde.split('/');
+  if(parts.length!==3)return desde;
+  const d=new Date(parts[2],parts[1]-1,parts[0]);
+  if(isNaN(d.getTime()))return desde;
+  const p=norm(per);
+  if(p.includes('anual')||p.includes('año'))d.setFullYear(d.getFullYear()+1);
+  else if(p.includes('semes'))d.setMonth(d.getMonth()+6);
+  else if(p.includes('trimest'))d.setMonth(d.getMonth()+3);
+  else if(p.includes('mensual')||p.includes('mes'))d.setMonth(d.getMonth()+1);
+  else return desde;
+  const dd=String(d.getDate()).padStart(2,'0');
+  const mm=String(d.getMonth()+1).padStart(2,'0');
+  const yy=d.getFullYear();
+  return `${dd}/${mm}/${yy}`;
+}
+function marcarPagado(id){
+  const r=ALL.find(x=>x._id===id);
+  if(!r)return;
+  r._pagado=true;
+  const hastaActual=excelDate(r.hasta);
+  r.desde=hastaActual;
+  r.hasta=calcNext(hastaActual,r.periodicidad||'mensual');
+  render();
+}
+function enviarWA(id){const r=ALL.find(x=>x._id===id);if(!r||!r.telefono)return alert('No hay teléfono');alert('Enviar WA a: '+r.telefono);}
+function enviarEmail(id){const r=ALL.find(x=>x._id===id);if(!r||!r.correo)return alert('No hay email');alert('Enviar Email a: '+r.correo);}
+function render(){
+  requestAnimationFrame(()=>{
+    const h=host();if(!h)return;
+    const tb=h.querySelector('#tbody-cartera');
+    if(!tb)return;
+    tb.innerHTML='';
+    hdr();
+    const tabId=getCurrentTab();
+    const isCartera=tabId==='cartera';
+    const filt=getFiltered();
+    const shown=window.CARTERA_SHOWN||SZ;console.log("RENDER: shown=",shown,"filt.length=",filt.length);
+    const toShow=filt.slice(0,Math.min(shown,filt.length));
+    toShow.forEach(r=>{
+      const m=r.moneda||'CRC';
+      const row=COLS.map(c=>{
+        if(c.key==='estado_pago'){
+          const badge=r._pagado?`<span class="noa-badge badge-ok">✓ Pagado</span>`:`<span class="noa-badge badge-pending">⏳ Pendiente</span>`;
+          return '<td>'+badge+'</td>';
+        }
+        if(c.key==='acciones'){
+          if(isCartera){
+            const btnPagar=r._pagado?'':'<button class="noa-action-btn" onclick="marcarPagado('+r._id+')">💰 Pagar</button> ';
+            return '<td>'+btnPagar+'<button class="noa-icon-btn" onclick="enviarWA('+r._id+')">📱</button> <button class="noa-icon-btn" onclick="enviarEmail('+r._id+')">📧</button></td>';
+          }else{
+            return '<td><button class="noa-icon-btn" onclick="enviarWA('+r._id+')">📱</button> <button class="noa-icon-btn" onclick="enviarEmail('+r._id+')">📧</button></td>';
+          }
+        }
+        let v=r[c.key]||'';
+        if(c.key==='prima')v=fmt(v,m);
+        else if(c.key==='desde'||c.key==='hasta')v=excelDate(v);
+        return '<td>'+esc(v)+'</td>';
+      }).join('');
+      tb.insertAdjacentHTML('beforeend','<tr>'+row+'</tr>');
+    });
+    const s=h.querySelector('#stats');
+    if(s)s.textContent='Mostrando '+toShow.length+' de '+filt.length+' | Filtro: '+(FILTER==='TODO'?'Todos':FILTER==='CRC'?'₡ Colones':'$ Dólares');
+    const bm=h.querySelector('#btn-more');
+    if(bm){
+      if(toShow.length<filt.length){bm.style.display='inline-block';bm.textContent='⬇ Cargar 50 más (quedan '+(filt.length-toShow.length)+')';}
+      else{bm.style.display='none';}
+    }
+    // Asignar event listeners
+    const bt=h.querySelector("#btn-todo");
+    const bc=h.querySelector("#btn-crc");
+    const bu=h.querySelector("#btn-usd");
+    if(bt)bt.onclick=()=>{FILTER="TODO";window.CARTERA_SHOWN=SZ;render();};
+    if(bc)bc.onclick=()=>{FILTER="CRC";window.CARTERA_SHOWN=SZ;render();};
+    if(bu)bu.onclick=()=>{FILTER="USD";window.CARTERA_SHOWN=SZ;render();};
+    if(bm)bm.onclick=()=>{console.log("Antes:",window.CARTERA_SHOWN);window.CARTERA_SHOWN=(window.CARTERA_SHOWN||SZ)+SZ;console.log("Después:",window.CARTERA_SHOWN);render();};
+  });
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+window.marcarPagado=marcarPagado;
+window.enviarWA=enviarWA;
+window.enviarEmail=enviarEmail;
+window.NOA_RENDER_CARTERA=csv=>{
+  try{
+    COLS=buildCols(csv.cols);
+    ALL=parseRows(csv);
+    FILTER='TODO';
+    window.CARTERA_SHOWN=SZ;
+    setTimeout(()=>{
+      render();
+      const h=host();if(!h)return;
+      const bt=h.querySelector('#btn-todo');
+      const bc=h.querySelector('#btn-crc');
+      const bu=h.querySelector('#btn-usd');
+      const bm=h.querySelector('#btn-more');
+      if(bt)bt.onclick=()=>{FILTER='TODO';render();};
+      if(bc)bc.onclick=()=>{FILTER='CRC';render();};
+      if(bu)bu.onclick=()=>{FILTER='USD';render();};
+      if(bm)bm.onclick=()=>{console.log("Antes:",window.CARTERA_SHOWN);window.CARTERA_SHOWN=(window.CARTERA_SHOWN||SZ)+SZ;console.log("Después:",window.CARTERA_SHOWN);render();};
+      console.log('[NOA] '+ALL.length+' clientes cargados');
+    },200);
+  }catch(e){console.error(e);alert('Error: '+e.message);}
+};
+document.querySelectorAll('.nav-tab').forEach(btn=>{btn.addEventListener('click',()=>{setTimeout(render,300);});});
+})();
