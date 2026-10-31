@@ -1,9 +1,9 @@
 // NOA - CARTERA V8
 // Incluye el ESTADO COMPARTIDO (window.NOA_ESTADO): una sola regla de fechas y de estado de cobro para Cartera
 // y el resto de pantallas. Las fechas se manejan planas (sin hora ni zona) y en hora de Costa Rica.
-// Periodo de gracia de Emmanuel: 9 dias habiles para todos los seguros (sin sabados, domingos ni feriados de ley),
+// Periodo de gracia de Hermann: 9 dias habiles para todos los seguros (sin sabados, domingos ni feriados de ley),
 // calculado siempre desde la fecha de cobro: no depende de ningun dato guardado, asi una recarga del Excel no lo cambia.
-// Estados segun la lista de Emmanuel:
+// Estados segun la lista de Hermann:
 //   Pendiente = desde 1 mes antes del cobro; Pagada = el cobro del periodo ya fue registrado;
 //   Cancelada = el dia siguiente a terminar el periodo de gracia.
 // Lo que no se puede calcular (sin fecha) queda sin estado: no se inventa nada.

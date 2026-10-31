@@ -225,7 +225,7 @@ window.actualizarComparativoCobros = async function() {
     try {
         const E = window.NOA_ESTADO;
         if (!E) return;
-        // La meta ($150,000 / ₡30,000,000) y su barra de avance eran valores fijos del sistema original, no datos de Emmanuel:
+        // La meta ($150,000 / ₡30,000,000) y su barra de avance eran valores fijos del sistema original, no datos de Hermann:
         // se ocultan hasta que ella defina una meta propia.
         document.querySelectorAll('.comparativo-monedas span').forEach(function (sp) {
             if (/Meta:/.test(sp.textContent || '')) sp.style.display = 'none';

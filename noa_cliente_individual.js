@@ -1,9 +1,9 @@
 // NOA CLIENTE - UN SOLO FORMULARIO para Nuevo y Editar.
-// Mismos campos, nombres y orden que el Excel "Formato columnas" de Emmanuel (07-10-26): Cliente, Póliza, Aseguradora, Línea,
+// Mismos campos, nombres y orden que el Excel "Formato columnas" de Hermann (07-10-26): Cliente, Póliza, Aseguradora, Línea,
 // Forma de pago, Vencimiento, F. Límite (se calcula sola), Prima, Moneda, Objeto Asegurado, Año, Placa, Próx Pago, Medio de cobro;
 // y el detalle del botón Ver: Identificación, Tel / WA, Otros tel., Email, Otros correos, Dirección, Planillas, Inicio y Vence del contrato.
 // Obligatorios: Cliente, Póliza y Vencimiento; lo demás es opcional y, si queda vacío, queda vacío (no se inventa nada).
-// Marca y Modelo no están en ese Excel pero se conservan en un grupo aparte ("por revisar") hasta decidir con Emmanuel.
+// Marca y Modelo no están en ese Excel pero se conservan en un grupo aparte ("por revisar") hasta decidir con Hermann.
 // El contenido que se escribe se guarda en MAYÚSCULA (menos los correos).
 // - Nuevo: guarda en la base (Neon) por /api/clientes?action=guardar. Antes revisa que la póliza no exista ya
 //   (ni activa ni en la Papelera), porque el servidor, si la póliza existe, ACTUALIZA ese cliente en vez de crear otro.

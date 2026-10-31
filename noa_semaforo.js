@@ -2,7 +2,7 @@
 // Usa el ESTADO COMPARTIDO de Cartera (window.NOA_ESTADO): la misma regla de fechas, en hora de Costa Rica,
 // y el mismo periodo de gracia (9 dias habiles), para que el Dashboard y Cartera nunca se contradigan.
 // Deduccion Mensual queda aparte, igual que en Cartera.
-// Colores segun la lista de Emmanuel (a confirmar con ella):
+// Colores segun la lista de Hermann (a confirmar con ella):
 //   Azul = a 1 mes del vencimiento (mas de 20 dias); Verde = 20 dias o menos para vencer;
 //   Amarillo = periodo de gracia (ya vencio y aun no se cancela); Rojo = cancelada (termino la gracia).
 // Lo que no entra en ninguno (pagada, aun lejos del vencimiento, sin fecha) no se cuenta: no se inventa un color.
@@ -55,7 +55,7 @@
     if (h3.removeAttribute) h3.removeAttribute('title');
   }
 
-  // Reemplaza, una sola vez, los 3 colores fijos del Dashboard por los 4 de la lista de Emmanuel
+  // Reemplaza, una sola vez, los 3 colores fijos del Dashboard por los 4 de la lista de Hermann
   function prepararSemaforo() {
     const hs = document.querySelectorAll('h3');
     let h3 = null;
