@@ -56,7 +56,7 @@
 
   function pantallaLogin(resolver) {
     estilo();
-    capa('<div class="c"><h2>Cobros Emmanuel Esquivel</h2><p>Entre con su usuario y su clave.</p>' +
+    capa('<div class="c"><h2>Cobros Hermann Solera</h2><p>Entre con su usuario y su clave.</p>' +
       '<input id="noa-lg-user" placeholder="Usuario" autocomplete="username" autocapitalize="off">' +
       '<input id="noa-lg-clave" type="password" placeholder="Clave" autocomplete="current-password">' +
       '<div class="m" id="noa-lg-msg"></div><button id="noa-lg-entrar">Entrar</button></div>');
