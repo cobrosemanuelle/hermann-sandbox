@@ -1,13 +1,6 @@
-// Configuración del sitio - EMMANUEL
+// Configuración dinámica por sitio - HERMANN
 const CONFIG = {
-  ANTHROPIC_API_KEY: 'PENDIENTE'
+  SUPABASE_URL: 'https://getafbqdlhyzaisfugzp.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdldGFmYnFkbGh5emFpc2Z1Z3pwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MTkzMDYsImV4cCI6MjEwNDM5NTMwNn0.xjsiSQktZERp-OEaoJmYVJCQkxXnnuGlc9yk82pRT-w'
 };
-
-// EmailJS de Emmanuel (cuenta cobrosee@outlook.com).
-// Servicio Gmail TEMPORAL de prueba: al conectar el correo de Prisma solo se cambia serviceId.
-const EMAILJS_CONFIG = {
-  publicKey: '58Wq2ZxTE7ENxmUb5',
-  serviceId: 'service_8806mrd',
-  templateId: 'template_i2ak6xs'
-};
-window.EMAILJS_CONFIG = EMAILJS_CONFIG;
+console.log('⚙️ Config Hermann cargado:', CONFIG.SUPABASE_URL);

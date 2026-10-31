@@ -1,17 +1,3 @@
-const API_BASE = '/api/clientes';
-
-const CAMPOS_FECHA = ['desde', 'hasta', 'desde_cobro', 'vence_contrato', 'fecha_limite_pago'];
-
-function convertirDDMMaISO(fecha) {
-  if (!fecha) return "";
-  const f = String(fecha).trim();
-  if (f.includes('/')) {
-    const [dd, mm, yyyy] = f.split('/');
-    if (dd && mm && yyyy && yyyy.length === 4) return `${yyyy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}`;
-  }
-  return f;
-}
-
 function detectarColumnaFecha(cliente, tipo) {
   if (tipo === "desde") {
     if (cliente["Fecha Desde"] !== undefined) return cliente["Fecha Desde"];
@@ -31,7 +17,6 @@ function detectarColumnaFecha(cliente, tipo) {
   }
   return null;
 }
-
 function convertirFechaExcel(valor) {
   if (!valor) return null;
   if (typeof valor === 'string' && valor.includes('-')) return valor;
@@ -41,83 +26,66 @@ function convertirFechaExcel(valor) {
   }
   return null;
 }
-
-// Neon entrega el id como numero; toda la pantalla lo compara como texto.
-function idATexto(c) {
-  return Object.assign({}, c, { id: String(c.id) });
-}
-
-// Fechas vacias -> null, fechas DD/MM/YYYY -> ISO, prima vacia -> no se envia.
-function limpiarCambios(cambios) {
-  const limpio = {};
-  Object.keys(cambios || {}).forEach(function (k) {
-    let v = cambios[k];
-    if (CAMPOS_FECHA.indexOf(k) !== -1) {
-      v = convertirDDMMaISO(v);
-      limpio[k] = v ? v : null;
-      return;
-    }
-    if (k === 'prima') {
-      if (v === '' || v === null || v === undefined || isNaN(Number(v))) return;
-      limpio[k] = Number(v);
-      return;
-    }
-    limpio[k] = v;
-  });
-  return limpio;
-}
-
 async function guardarClientesSupabase(clientes) {
   try {
     const user = await getUserNOA();
     if (!user) throw new Error("No autenticado");
-    const clientesFormateados = clientes.map(c => ({
-      ...c,
-      desde: convertirDDMMaISO(c.desde),
-      hasta: convertirDDMMaISO(c.hasta),
-      desde_cobro: convertirDDMMaISO(c.desde_cobro),
-      vence_contrato: convertirDDMMaISO(c.vence_contrato),
-      fecha_limite_pago: convertirDDMMaISO(c.fecha_limite_pago),
-    }));
-    const resp = await fetch(`${API_BASE}?action=guardar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: user.id, clientes: clientesFormateados })
-    });
-    const result = await resp.json();
-    console.log('✅ Guardado:', result.actualizados, 'actualizados,', result.nuevos, 'nuevos,', (result.fallidos || []).length, 'fallidos');
-    return result;
+    const { data: existentes, error: fetchError } = await supabaseClient.from("clientes").select("id, poliza").eq("user_id", user.id);
+    if (fetchError) throw fetchError;
+    const polizaToId = {};
+    existentes.forEach(e => { polizaToId[e.poliza] = e.id; });
+    let actualizados = 0, nuevos = 0;
+    for (const c of clientes) {
+      const datosCliente = {
+        user_id: user.id,
+        asegurado: c.asegurado || "",
+        identificacion: c.identificacion || "",
+        poliza: c.poliza || "",
+        telefono: c.telefono || "",
+        correo: c.correo || "",
+        periodicidad: c.periodicidad || "",
+        desde: c.desde || "",
+        hasta: c.hasta || "",
+        moneda: c.moneda || "CRC",
+        placa: c.placa || "",
+        aseguradora: c.aseguradora || "",
+        prima: parseFloat(String(c.prima || 0).replace(",", ".")),
+      };
+      if (polizaToId[c.poliza]) {
+        const { error } = await supabaseClient.from("clientes").update(datosCliente).eq("id", polizaToId[c.poliza]);
+        if (error) throw error;
+        actualizados++;
+      } else {
+        const { error } = await supabaseClient.from("clientes").insert([datosCliente]);
+        if (error) throw error;
+        nuevos++;
+      }
+    }
+    console.log('✅ Guardado:', actualizados, 'actualizados,', nuevos, 'nuevos');
+    return { success: true, actualizados, nuevos, total: clientes.length };
   } catch (error) {
     console.error("Error guardando:", error);
     return { success: false, error: error.message };
   }
 }
-
 async function cargarClientesSupabase() {
   try {
     const user = await getUserNOA();
     if (!user) throw new Error('No autenticado');
-    const resp = await fetch(`${API_BASE}?user_id=${encodeURIComponent(user.id)}`);
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
-    return { success: true, clientes: (result.clientes || []).map(idATexto) };
+    const { data, error } = await supabaseClient.from('clientes').select('*').eq('user_id', user.id).or('borrado.is.null,borrado.eq.false').order('created_at', { ascending: false });
+    if (error) throw error;
+    return { success: true, clientes: data || [] };
   } catch (error) {
     console.error('Error cargando:', error);
     return { success: false, error: error.message };
   }
 }
-
 async function actualizarClienteSupabase(clienteId, cambios) {
   try {
-    const limpio = limpiarCambios(cambios);
-    if (Object.keys(limpio).length === 0) return { success: true };
-    const resp = await fetch(`${API_BASE}?action=actualizar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: clienteId, cambios: limpio })
-    });
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
+    if (cambios.desde && cambios.desde.includes('/')) { const [dd, mm, yyyy] = cambios.desde.split('/'); cambios.desde = yyyy+'-'+mm+'-'+dd; }
+    if (cambios.hasta && cambios.hasta.includes('/')) { const [dd, mm, yyyy] = cambios.hasta.split('/'); cambios.hasta = yyyy+'-'+mm+'-'+dd; }
+    const { error } = await supabaseClient.from('clientes').update(cambios).eq('id', clienteId);
+    if (error) throw error;
     if (typeof limpiarTodosLosIndicadores === "function") limpiarTodosLosIndicadores();
     return { success: true };
   } catch (error) {
@@ -125,17 +93,22 @@ async function actualizarClienteSupabase(clienteId, cambios) {
     return { success: false, error: error.message };
   }
 }
-
 async function marcarPagadoSupabase(clienteId) {
   try {
     const user = await getUserNOA();
-    const resp = await fetch(`${API_BASE}?action=marcar-pagado`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: clienteId, user_id: user.id })
-    });
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
+    const { data: cliente, error: fetchError } = await supabaseClient.from("clientes").select("*").eq("id", clienteId).single();
+    if (fetchError) throw fetchError;
+    const hastaActual = new Date(cliente.hasta);
+    let hastaNuevo = new Date(hastaActual);
+    const per = (cliente.periodicidad || "mensual").toLowerCase();
+    if (per.includes("anual")) hastaNuevo.setFullYear(hastaNuevo.getFullYear() + 1);
+    else if (per.includes("semes")) hastaNuevo.setMonth(hastaNuevo.getMonth() + 6);
+    else if (per.includes("trimest")) hastaNuevo.setMonth(hastaNuevo.getMonth() + 3);
+    else hastaNuevo.setMonth(hastaNuevo.getMonth() + 1);
+    const { error: updateError } = await supabaseClient.from("clientes").update({ pagado: true, desde: cliente.hasta, hasta: hastaNuevo.toISOString().split("T")[0] }).eq("id", clienteId);
+    if (updateError) throw updateError;
+    const { error: historyError } = await supabaseClient.from("pagos_history").insert([{ user_id: user.id, cliente_id: clienteId, asegurado: cliente.asegurado, poliza: cliente.poliza, identificacion: cliente.identificacion, monto: cliente.prima, moneda: cliente.moneda, desde_anterior: cliente.desde, hasta_anterior: cliente.hasta, desde_nuevo: cliente.hasta, hasta_nuevo: hastaNuevo.toISOString().split("T")[0] }]);
+    if (historyError) throw historyError;
     if (typeof limpiarTodosLosIndicadores === "function") limpiarTodosLosIndicadores();
     return { success: true };
   } catch (error) {
@@ -143,18 +116,12 @@ async function marcarPagadoSupabase(clienteId) {
     return { success: false, error: error.message };
   }
 }
-
 async function limpiarClientesSupabase() {
   try {
     const user = await getUserNOA();
     if (!user) throw new Error('No autenticado');
-    const resp = await fetch(`${API_BASE}?action=limpiar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: user.id })
-    });
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
+    const { error } = await supabaseClient.from('clientes').delete().eq('user_id', user.id);
+    if (error) throw error;
     if (typeof limpiarTodosLosIndicadores === "function") limpiarTodosLosIndicadores();
     return { success: true };
   } catch (error) {
@@ -162,53 +129,40 @@ async function limpiarClientesSupabase() {
     return { success: false, error: error.message };
   }
 }
-
 async function borrarClienteSupabase(clienteId) {
   try {
-    const resp = await fetch(`${API_BASE}?action=borrar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: clienteId })
-    });
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
+    const { error } = await supabaseClient.from('clientes').update({ borrado: true }).eq('id', clienteId);
+    if (error) throw error;
+    window.datosReales = (window.datosReales || []).filter(function(c) { return c.id !== clienteId; });
+    if (typeof limpiarTodosLosIndicadores === "function") limpiarTodosLosIndicadores();
     return { success: true };
   } catch (error) {
-    console.error('Error archivando:', error);
+    console.error('Error borrando:', error);
     return { success: false, error: error.message };
   }
 }
-
 async function cargarClientesBorrados() {
   try {
     const user = await getUserNOA();
     if (!user) throw new Error('No autenticado');
-    const resp = await fetch(`${API_BASE}?action=borrados&user_id=${encodeURIComponent(user.id)}`);
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
-    return { success: true, clientes: (result.clientes || []).map(idATexto) };
+    const { data, error } = await supabaseClient.from('clientes').select('*').eq('user_id', user.id).eq('borrado', true).order('created_at', { ascending: false });
+    if (error) throw error;
+    return { success: true, clientes: data || [] };
   } catch (error) {
     console.error('Error cargando borrados:', error);
     return { success: false, error: error.message };
   }
 }
-
 async function restaurarClienteSupabase(clienteId) {
   try {
-    const resp = await fetch(`${API_BASE}?action=restaurar`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: clienteId })
-    });
-    const result = await resp.json();
-    if (!result.success) throw new Error(result.error);
+    const { error } = await supabaseClient.from('clientes').update({ borrado: false }).eq('id', clienteId);
+    if (error) throw error;
     return { success: true };
   } catch (error) {
     console.error('Error restaurando:', error);
     return { success: false, error: error.message };
   }
 }
-
 window.guardarClientesSupabase = guardarClientesSupabase;
 window.cargarClientesSupabase = cargarClientesSupabase;
 window.actualizarClienteSupabase = actualizarClienteSupabase;
