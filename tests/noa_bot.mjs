@@ -33,15 +33,21 @@ await correr('Login', async () => {
 await correr('Dashboard', async () => { await esperar(2000); const k = await pg.textContent('#kpi-total-clientes'); paso('KPIs cargan', !/undefined|NaN/i.test(k), 'Total: ' + k); await shot('04_dashboard'); });
 await correr('Cartera', async () => { await pg.click('button.nav-tab:has-text("Cartera")'); await esperar(2000); const t = await pg.$('button:has-text("TODAS")'); if (t) await t.click(); await esperar(1500); const f = await pg.$$('#cartera-noa tbody tr'); paso('Clientes visibles', f.length > 0, f.length + ' filas'); await shot('05_cartera'); });
 await correr('Expediente', async () => {
-  const c = await pg.$('#cartera-noa tbody tr:first-child td');
-  if (!c) throw new Error('Sin filas');
-  await c.click();
+  // Clic en menú ⋯ del primer cliente
+  const btnMenu = await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');
+  if (!btnMenu) throw new Error('Botón menú no encontrado');
+  await btnMenu.click();
+  await esperar(500);
+  // Clic en Carpeta
+  const btnCarpeta = await pg.$('button:has-text("Carpeta")');
+  if (!btnCarpeta) throw new Error('Opción Carpeta no encontrada');
+  await btnCarpeta.click();
   await esperar(2000);
   const modal = await pg.$('#modal-expediente-cliente');
   if (!modal) throw new Error('Modal expediente no abrió');
   await shot('06_expediente');
   paso('Expediente abre', true);
-  // Cerrar con el botón ✕ dentro del modal
+  // Cerrar modal
   const btnCerrar = await pg.$('#modal-expediente-cliente button');
   if (btnCerrar) await btnCerrar.click();
   await esperar(500);
