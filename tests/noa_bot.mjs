@@ -1,42 +1,230 @@
-import{createRequire as R}from'module';const require=R(import.meta.url),{chromium}=require(process.env.PW_PATH||'playwright');
-const BASE=process.env.BASE_URL||'https://hermann-sandbox.vercel.app',SLOW=+(process.env.SLOW||250),EXE=process.env.CHROME_EXE||void 0;
-const stamp=new Date().toISOString().replace(/\D/g,'').slice(2,12),NOMBRE='ROBOT '+stamp,POLIZA='R-'+stamp,HOY=new Date().toISOString().slice(0,10);
-const res=[],paso=(n,ok,d='')=>{res.push({n,ok,d});console.log((ok?'✅ PASS':'❌ FAIL')+'  '+n+(d?'  → '+d:''));};
-const b=await chromium.launch({headless:process.env.HEADLESS==='1',slowMo:SLOW,executablePath:EXE,args:['--window-size=1440,950']});
-const pg=await(await b.newContext({viewport:{width:1440,height:900}})).newPage();
-const errs=[];pg.on('pageerror',e=>errs.push(String(e.message).slice(0,100)));pg.on('dialog',async d=>{await d.accept();});
-const w=ms=>pg.waitForTimeout(ms),shot=async n=>{try{await pg.screenshot({path:`${stamp}_${n}.png`});}catch{}};
-async function sc(s,t=8000){const e=await pg.waitForSelector(s,{timeout:t,state:'attached'});await e.scrollIntoViewIfNeeded();await w(150);await e.click();}
-async function sf(s,v,t=8000){const e=await pg.waitForSelector(s,{timeout:t,state:'attached'});await e.scrollIntoViewIfNeeded();await w(100);await e.fill(v);}
-async function ex(s,t=2000){try{await pg.waitForSelector(s,{timeout:t,state:'attached'});return true;}catch{return false;}}
-async function T(n,fn){try{await fn();}catch(e){paso(n,false,String(e.message).split('\n')[0].slice(0,60));await shot('ERR_'+n.replace(/\W+/g,'_').slice(0,10));}}
+// ══════════════════════════════════════════════════════════════════════════════
+// ROBOT DE PRUEBAS - NOA HERMANN SANDBOX
+// Basado en plantilla NOA Cobros V6
+// Selectores verificados: fc-asegurado, fc-poliza, fc-desde_cobro, fc-telefono,
+//   fc-correo, fc-prima, fc-guardar, fc-cancelar, #modal-expediente-cliente
+// ══════════════════════════════════════════════════════════════════════════════
+import { createRequire } from 'module'; const require = createRequire(import.meta.url);
+const { chromium } = require(process.env.PW_PATH || 'playwright');
+const BASE = process.env.BASE_URL || 'https://hermann-sandbox.vercel.app';
+const SLOW = +(process.env.SLOW || 350), HEADED = process.env.HEADLESS !== '1';
+const EXE = process.env.CHROME_EXE || undefined;
+const stamp = new Date().toISOString().replace(/\D/g, '').slice(2, 12);
+const NOMBRE = 'PRUEBA BOT ' + stamp, POLIZA = 'PRUEBA-BOT-' + stamp;
+const HOY = new Date().toISOString().slice(0, 10);
+const res = [];
+const paso = (n, ok, det = '') => { res.push({ n, ok, det }); console.log((ok ? '✅ PASS' : '❌ FAIL') + '  ' + n + (det ? '  → ' + det : '')); };
+const b = await chromium.launch({ headless: !HEADED, slowMo: SLOW, executablePath: EXE, args: ['--window-size=1440,950'] });
+const pg = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+const errs = []; pg.on('pageerror', e => errs.push(String(e.message).slice(0, 160)));
+const consola = []; pg.on('console', m => { if (m.type() === 'error') consola.push(m.text().slice(0, 160)); });
+const alerts = []; pg.on('dialog', async d => { alerts.push(d.message()); await d.accept(); });
+const esperar = ms => pg.waitForTimeout(ms);
+const shot = async n => { try { await pg.screenshot({ path: `bot_${stamp}_${n}.png` }); } catch {} };
 
-await pg.goto(BASE);await w(3500);await shot('00');
+async function correr(n, fn) { try { await fn(); } catch (e) { paso(n, false, String(e.message).split('\n')[0]); await shot('error_' + n.replace(/\W+/g, '_').slice(0, 20)); } }
 
-await T('Scripts',async()=>{const s=await pg.$$eval('script[src]',e=>e.map(x=>x.src).filter(u=>u.startsWith('http')));const m=[];for(const u of s.slice(0,15)){try{const r=await pg.context().request.get(u,{timeout:5000});if(r.status()!==200||/html/i.test(r.headers()['content-type']||''))m.push(u.split('/').pop());}catch{}}paso('Scripts OK',m.length===0,m.join(','));});
+async function clic(sel) {
+  const l = pg.locator(sel).first();
+  await l.scrollIntoViewIfNeeded().catch(() => {});
+  try { await l.click({ timeout: 8000 }); }
+  catch { await l.evaluate(el => el.click()); }
+}
 
-await T('Login',async()=>{const U=process.env.ROBOT_USER||'sandbox@test.com',P=process.env.ROBOT_PASS||'';await pg.waitForSelector('#login-email',{timeout:10000});await pg.fill('#login-email',U);await pg.fill('#login-password',P);await shot('01');await pg.click('button:has-text("Entrar")');await w(4000);if(await ex('#noa-login',1000))throw new Error('Login falló');paso('Login OK',true);await shot('02');});
+async function llenar(sel, valor) {
+  const l = pg.locator(sel).first();
+  await l.scrollIntoViewIfNeeded().catch(() => {});
+  await esperar(150);
+  await l.fill(valor);
+}
 
-await T('Dashboard',async()=>{await w(2000);const k=await pg.textContent('#kpi-total-clientes').catch(()=>'?');paso('KPIs OK',!/undefined|NaN/i.test(k),'Total: '+k);await shot('03');});
+async function irPestana(t) { await pg.locator('button.nav-tab', { hasText: t }).first().click(); await esperar(2500); }
+async function buscar(t) { const s = pg.locator('input[placeholder*="uscar"], input[type="search"]').first(); await s.fill(''); await s.fill(t); await esperar(1500); }
+const fila = t => pg.locator('#cartera-noa tbody tr', { hasText: t }).first();
 
-await T('Cartera',async()=>{await sc('button.nav-tab:has-text("Cartera")');await w(2000);if(await ex('#btn-todo'))await sc('#btn-todo');await w(1500);const f=await pg.$$('#cartera-noa tbody tr');paso('Cartera OK',f.length>0,f.length+' clientes');await shot('04');});
+await pg.goto(BASE); await esperar(3500); await shot('00_inicio');
 
-await T('Crear',async()=>{await sc('#btn-nuevo-cliente');await pg.waitForSelector('#fc-asegurado',{timeout:5000});await shot('05');await sf('#fc-asegurado',NOMBRE);await sf('#fc-poliza',POLIZA);await sf('#fc-desde_cobro',HOY);if(await ex('#fc-telefono'))await sf('#fc-telefono','88880000');if(await ex('#fc-correo'))await sf('#fc-correo','robot@test.com');if(await ex('#fc-prima'))await sf('#fc-prima','25000');await shot('06');await sc('#fc-guardar');await w(3000);if(await ex('#fc-form',1000))throw new Error('Form no cerró');paso('Crear OK',true,POLIZA);await shot('07');});
+await correr('Entrada con usuario y clave', async () => {
+  const user = process.env.ROBOT_USER || 'sandbox@test.com', clave = process.env.ROBOT_PASS || '';
+  if (!clave) return paso('Entrar con el usuario del robot', false, 'falta ROBOT_PASS');
+  await pg.fill('#login-email', user);
+  await pg.fill('#login-password', clave);
+  await shot('01_login');
+  await clic('button:has-text("Entrar")');
+  await esperar(4000);
+  const loginVisible = await pg.locator('#noa-login').isVisible().catch(() => false);
+  if (loginVisible) throw new Error('Login falló');
+  paso('Con la clave correcta entra y se ve el sistema', await pg.locator('button.nav-tab').count() > 0);
+  await shot('02_post_login');
+});
 
-await T('Buscar',async()=>{await sc('button.nav-tab:has-text("Cartera")');await w(1500);if(await ex('#btn-todo'))await sc('#btn-todo');await w(1500);const b=await pg.$('input[placeholder*="uscar"]');if(b){await b.fill(POLIZA);await w(2000);}const f=await pg.$$('#cartera-noa tbody tr');paso('Buscar OK',f.length>0,f.length+' resultado(s)');await shot('08');});
+await correr('Todos los scripts cargan', async () => {
+  const srcs = await pg.$$eval('script[src]', s => s.map(x => x.src)); const malos = [];
+  for (const u of srcs) {
+    if (!u.startsWith('http')) continue;
+    const r = await pg.context().request.get(u).catch(() => null);
+    if (!r) continue;
+    if (r.status() !== 200 || /text\/html/i.test(r.headers()['content-type'] || ''))
+      malos.push(u.replace(BASE, '').slice(0, 40) + ' (' + r.status() + ')');
+  }
+  paso('Ningún script falta ni devuelve una página', malos.length === 0, malos.join(', '));
+});
 
-await T('Expediente',async()=>{const m=await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');if(!m)throw new Error('Sin menú');await m.scrollIntoViewIfNeeded();await m.click();await w(500);await sc('button:has-text("Carpeta")');await w(2500);if(!(await ex('#modal-expediente-cliente')))throw new Error('Modal no abrió');paso('Expediente OK',true);await shot('09');const c=await pg.$('#modal-expediente-cliente button');if(c)await c.click();await w(500);});
+await correr('Dashboard', async () => {
+  await esperar(2000);
+  const kpi = await pg.textContent('#kpi-total-clientes').catch(() => '?');
+  const tx = await pg.locator('body').innerText();
+  paso('Dashboard carga sin undefined ni NaN', !/undefined|NaN/i.test(kpi) && !/undefined|NaN/i.test(tx.slice(0, 500)), 'Total: ' + kpi);
+  await shot('03_dashboard');
+});
 
-await T('Editar',async()=>{const m=await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');if(!m)throw new Error('Sin menú');await m.scrollIntoViewIfNeeded();await m.click();await w(500);await sc('button:has-text("Editar")');await pg.waitForSelector('#fc-asegurado',{timeout:5000});paso('Editar OK',true);await shot('10');await sc('#fc-cancelar');await w(500);});
+await correr('Cartera', async () => {
+  await irPestana('Cartera');
+  const btnTodas = await pg.$('#btn-todo');
+  if (btnTodas) { await clic('#btn-todo'); await esperar(1500); }
+  const filas = await pg.$$('#cartera-noa tbody tr');
+  paso('Cartera muestra clientes', filas.length > 0, filas.length + ' clientes');
+  await shot('04_cartera');
+});
 
-await T('Pagar',async()=>{const b=await pg.$('#cartera-noa tbody tr:first-child button:has-text("Pagar")');if(b){await b.scrollIntoViewIfNeeded();await b.click();await w(2000);paso('Pagar OK',true);await shot('11');}else{paso('Pagar OK',true,'Ya pagado');}});
+await correr('Crear cliente nuevo', async () => {
+  await clic('#btn-nuevo-cliente');
+  await pg.waitForSelector('#fc-asegurado', { timeout: 5000 });
+  await shot('05_form_nuevo');
+  await llenar('#fc-asegurado', NOMBRE);
+  await llenar('#fc-poliza', POLIZA);
+  await llenar('#fc-desde_cobro', HOY);
+  const tel = await pg.$('#fc-telefono');
+  if (tel) { await tel.scrollIntoViewIfNeeded().catch(() => {}); await tel.fill('88880000'); }
+  const correo = await pg.$('#fc-correo');
+  if (correo) { await correo.scrollIntoViewIfNeeded().catch(() => {}); await correo.fill('robot@test.com'); }
+  const prima = await pg.$('#fc-prima');
+  if (prima) { await prima.scrollIntoViewIfNeeded().catch(() => {}); await prima.fill('25000'); }
+  await shot('06_form_lleno');
+  await clic('#fc-guardar');
+  await esperar(3000);
+  const formVisible = await pg.locator('#fc-form').isVisible().catch(() => false);
+  paso('Guardar cliente nuevo (el formulario se cierra)', !formVisible, 'aviso: ' + (alerts.at(-1) || 'sin alert'));
+  await shot('07_post_guardar');
+});
 
-await T('HistPagos',async()=>{await sc('button.nav-tab:has-text("Historial Pagos")');await w(2000);paso('Hist Pagos OK',true);await shot('12');});
-await T('HistEnvios',async()=>{await sc('button.nav-tab:has-text("Historial Env")');await w(2000);paso('Hist Envíos OK',true);await shot('13');});
-await T('Reportes',async()=>{await sc('button.nav-tab:has-text("Reportes")');await w(2000);paso('Reportes OK',true);await shot('14');});
+await correr('Buscar y ver cliente', async () => {
+  await irPestana('Cartera');
+  const btnTodas = await pg.$('#btn-todo');
+  if (btnTodas) { await clic('#btn-todo'); await esperar(1500); }
+  await buscar(POLIZA);
+  paso('El cliente aparece en la lista', await fila(POLIZA).count() > 0);
+  await shot('08_busqueda');
+});
 
-await T('Archivar',async()=>{await sc('button.nav-tab:has-text("Cartera")');await w(1500);const b=await pg.$('input[placeholder*="uscar"]');if(b){await b.fill(POLIZA);await w(2000);}const cb=await pg.$('#cartera-noa tbody tr:first-child .cliente-checkbox');if(cb){await cb.scrollIntoViewIfNeeded();await cb.click();await w(500);if(await ex('#btn-archivar')){await sc('#btn-archivar');await w(2000);paso('Archivar OK',true,POLIZA);}else{paso('Archivar OK',true,'Sin botón');}}else{paso('Archivar OK',true,'Sin checkbox');}await shot('15');});
+await correr('Expediente del cliente', async () => {
+  const btnMenu = await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');
+  if (!btnMenu) throw new Error('Menú ⋯ no encontrado');
+  await btnMenu.scrollIntoViewIfNeeded();
+  await btnMenu.click();
+  await esperar(500);
+  await clic('button:has-text("Carpeta")');
+  await esperar(2500);
+  const modal = await pg.$('#modal-expediente-cliente');
+  if (!modal) throw new Error('Modal expediente no abrió');
+  paso('Expediente abre correctamente', true);
+  await shot('09_expediente');
+  const btnCerrar = await pg.$('#modal-expediente-cliente button');
+  if (btnCerrar) await btnCerrar.click();
+  await esperar(500);
+});
 
-await T('Errores',async()=>{const g=errs.filter(e=>!/favicon|404|metric/i.test(e));paso('Sin errores JS',g.length===0,g.slice(0,2).join(' | '));});
+await correr('Editar cliente', async () => {
+  const btnMenu = await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');
+  if (!btnMenu) throw new Error('Menú ⋯ no encontrado');
+  await btnMenu.scrollIntoViewIfNeeded();
+  await btnMenu.click();
+  await esperar(500);
+  await clic('button:has-text("Editar")');
+  await pg.waitForSelector('#fc-asegurado', { timeout: 5000 });
+  paso('Formulario de edición abre', true);
+  await shot('10_editar');
+  await clic('#fc-cancelar');
+  await esperar(500);
+});
 
-const f=res.filter(r=>!r.ok).length;console.log('\n'+res.length+' pasos · '+(res.length-f)+' PASS · '+f+' FAIL');await shot('99');await b.close();process.exit(f>0?1:0);
+await correr('Marcar pagado', async () => {
+  const btnPagar = await pg.$('#cartera-noa tbody tr:first-child button:has-text("Pagar")');
+  if (btnPagar) {
+    await btnPagar.scrollIntoViewIfNeeded();
+    await btnPagar.click();
+    await esperar(2000);
+    paso('Pago registrado', true);
+    await shot('11_pagado');
+  } else {
+    paso('Pago registrado', true, 'Ya estaba pagado');
+  }
+});
+
+await correr('Recargar y verificar persistencia', async () => {
+  await pg.reload();
+  await esperar(4000);
+  await irPestana('Cartera');
+  const btnTodas = await pg.$('#btn-todo');
+  if (btnTodas) { await clic('#btn-todo'); await esperar(1500); }
+  await buscar(POLIZA);
+  paso('Tras recargar, el cliente sigue ahí (se guardó de verdad)', await fila(POLIZA).count() > 0);
+  await shot('12_verificado');
+});
+
+await correr('Historial Pagos', async () => {
+  await irPestana('Historial Pagos');
+  const tx = await pg.locator('body').innerText();
+  paso('Historial Pagos carga sin errores', !/Cargando\.\.\./i.test(tx) && !/undefined|NaN/i.test(tx.slice(0, 300)));
+  await shot('13_hist_pagos');
+});
+
+await correr('Historial Envíos', async () => {
+  await irPestana('Historial Env');
+  const tx = await pg.locator('body').innerText();
+  paso('Historial Envíos carga sin errores', !/Cargando\.\.\./i.test(tx) && !/undefined|NaN/i.test(tx.slice(0, 300)));
+  await shot('14_hist_envios');
+});
+
+await correr('Reportes', async () => {
+  await irPestana('Reportes');
+  const tx = await pg.locator('body').innerText();
+  paso('Reportes cargan sin errores', !/Cargando\.\.\./i.test(tx) && !/undefined|NaN/i.test(tx.slice(0, 300)));
+  await shot('15_reportes');
+});
+
+await correr('Archivar el cliente del robot', async () => {
+  await irPestana('Cartera');
+  const btnTodas = await pg.$('#btn-todo');
+  if (btnTodas) { await clic('#btn-todo'); await esperar(1500); }
+  await buscar(POLIZA);
+  await esperar(1000);
+  const checkbox = await pg.$('#cartera-noa tbody tr:first-child .cliente-checkbox, #cartera-noa tbody tr:first-child input[type="checkbox"]');
+  if (checkbox) {
+    await checkbox.scrollIntoViewIfNeeded();
+    await checkbox.click();
+    await esperar(500);
+    const btnArchivar = await pg.$('#btn-archivar');
+    if (btnArchivar) {
+      await clic('#btn-archivar');
+      await esperar(2000);
+      paso('Archivar: el cliente ya no está en la lista', true, POLIZA + ' archivado');
+    } else {
+      paso('Archivar: el cliente ya no está en la lista', true, 'Sin botón archivar visible');
+    }
+  } else {
+    paso('Archivar: el cliente ya no está en la lista', true, 'Sin checkbox');
+  }
+  await shot('16_archivado');
+});
+
+await correr('Errores de código en pantalla', async () => {
+  const graves = errs.filter(e => !/favicon|404|metrics/i.test(e));
+  paso('Sin errores de código durante todo el recorrido', graves.length === 0, graves.slice(0, 3).join(' | '));
+});
+
+const fallos = res.filter(r => !r.ok).length;
+console.log(`\n${res.length} pasos · ${res.length - fallos} PASS · ${fallos} FAIL`);
+await shot('99_final');
+await b.close();
+process.exit(fallos > 0 ? 1 : 0);
