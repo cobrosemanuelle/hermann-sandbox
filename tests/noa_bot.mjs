@@ -32,7 +32,20 @@ await correr('Login', async () => {
 });
 await correr('Dashboard', async () => { await esperar(2000); const k = await pg.textContent('#kpi-total-clientes'); paso('KPIs cargan', !/undefined|NaN/i.test(k), 'Total: ' + k); await shot('04_dashboard'); });
 await correr('Cartera', async () => { await pg.click('button.nav-tab:has-text("Cartera")'); await esperar(2000); const t = await pg.$('button:has-text("TODAS")'); if (t) await t.click(); await esperar(1500); const f = await pg.$$('#cartera-noa tbody tr'); paso('Clientes visibles', f.length > 0, f.length + ' filas'); await shot('05_cartera'); });
-await correr('Expediente', async () => { const c = await pg.$('#cartera-noa tbody tr:first-child td'); if (!c) throw new Error('Sin filas'); await c.click(); await esperar(2000); paso('Expediente abre', true); await shot('06_expediente'); const x = await pg.$('button:has-text("Cerrar"), button:has-text("X")'); if (x) await x.click(); });
+await correr('Expediente', async () => {
+  const c = await pg.$('#cartera-noa tbody tr:first-child td');
+  if (!c) throw new Error('Sin filas');
+  await c.click();
+  await esperar(2000);
+  const modal = await pg.$('#modal-expediente-cliente');
+  if (!modal) throw new Error('Modal expediente no abrió');
+  await shot('06_expediente');
+  paso('Expediente abre', true);
+  // Cerrar con el botón ✕ dentro del modal
+  const btnCerrar = await pg.$('#modal-expediente-cliente button');
+  if (btnCerrar) await btnCerrar.click();
+  await esperar(500);
+});
 await correr('Historial Pagos', async () => { await pg.click('button.nav-tab:has-text("Historial Pagos")'); await esperar(2000); paso('Historial Pagos OK', true); await shot('07_pagos'); });
 await correr('Historial Envíos', async () => { await pg.click('button.nav-tab:has-text("Historial Env")'); await esperar(2000); paso('Historial Envíos OK', true); await shot('08_envios'); });
 await correr('Reportes', async () => { await pg.click('button.nav-tab:has-text("Reportes")'); await esperar(2000); paso('Reportes OK', true); await shot('09_reportes'); });
