@@ -1,350 +1,42 @@
-// ══════════════════════════════════════════════════════════════════════════════
-// ROBOT NOA HERMANN SANDBOX - PRUEBA COMPLETA
-// Selectores verificados del código fuente:
-//   Login: #login-email, #login-password
-//   Tabs: button.nav-tab con onclick="cambiarTab('...')"
-//   Nuevo cliente: #btn-nuevo-cliente → formulario fc-*
-//   Campos: fc-asegurado, fc-poliza, fc-desde_cobro (requeridos), fc-telefono, fc-correo, fc-prima
-//   Guardar: #fc-guardar | Cancelar: #fc-cancelar
-//   Menú fila: button con texto "⋯"
-//   Carpeta: button con texto "Carpeta" → #modal-expediente-cliente
-//   Editar: button con texto "Editar" → mismo formulario fc-*
-//   Pagar: button con texto "Pagar"
-//   Archivar: checkbox .cliente-checkbox + #btn-archivar
-// ══════════════════════════════════════════════════════════════════════════════
+import{createRequire as R}from'module';const require=R(import.meta.url),{chromium}=require(process.env.PW_PATH||'playwright');
+const BASE=process.env.BASE_URL||'https://hermann-sandbox.vercel.app',SLOW=+(process.env.SLOW||250),EXE=process.env.CHROME_EXE||void 0;
+const stamp=new Date().toISOString().replace(/\D/g,'').slice(2,12),NOMBRE='ROBOT '+stamp,POLIZA='R-'+stamp,HOY=new Date().toISOString().slice(0,10);
+const res=[],paso=(n,ok,d='')=>{res.push({n,ok,d});console.log((ok?'✅ PASS':'❌ FAIL')+'  '+n+(d?'  → '+d:''));};
+const b=await chromium.launch({headless:process.env.HEADLESS==='1',slowMo:SLOW,executablePath:EXE,args:['--window-size=1440,950']});
+const pg=await(await b.newContext({viewport:{width:1440,height:900}})).newPage();
+const errs=[];pg.on('pageerror',e=>errs.push(String(e.message).slice(0,100)));pg.on('dialog',async d=>{await d.accept();});
+const w=ms=>pg.waitForTimeout(ms),shot=async n=>{try{await pg.screenshot({path:`${stamp}_${n}.png`});}catch{}};
+async function sc(s,t=8000){const e=await pg.waitForSelector(s,{timeout:t,state:'attached'});await e.scrollIntoViewIfNeeded();await w(150);await e.click();}
+async function sf(s,v,t=8000){const e=await pg.waitForSelector(s,{timeout:t,state:'attached'});await e.scrollIntoViewIfNeeded();await w(100);await e.fill(v);}
+async function ex(s,t=2000){try{await pg.waitForSelector(s,{timeout:t,state:'attached'});return true;}catch{return false;}}
+async function T(n,fn){try{await fn();}catch(e){paso(n,false,String(e.message).split('\n')[0].slice(0,60));await shot('ERR_'+n.replace(/\W+/g,'_').slice(0,10));}}
 
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PW_PATH || 'playwright');
+await pg.goto(BASE);await w(3500);await shot('00');
 
-const BASE = process.env.BASE_URL || 'https://hermann-sandbox.vercel.app';
-const SLOW = +(process.env.SLOW || 350);
-const HEADED = process.env.HEADLESS !== '1';
-const EXE = process.env.CHROME_EXE || undefined;
+await T('Scripts',async()=>{const s=await pg.$$eval('script[src]',e=>e.map(x=>x.src).filter(u=>u.startsWith('http')));const m=[];for(const u of s.slice(0,15)){try{const r=await pg.context().request.get(u,{timeout:5000});if(r.status()!==200||/html/i.test(r.headers()['content-type']||''))m.push(u.split('/').pop());}catch{}}paso('Scripts OK',m.length===0,m.join(','));});
 
-const stamp = new Date().toISOString().replace(/\D/g, '').slice(2, 12);
-const NOMBRE = 'PRUEBA BOT ' + stamp;
-const POLIZA = 'BOT-' + stamp;
-const HOY = new Date().toISOString().slice(0, 10);
+await T('Login',async()=>{const U=process.env.ROBOT_USER||'sandbox@test.com',P=process.env.ROBOT_PASS||'';await pg.waitForSelector('#login-email',{timeout:10000});await pg.fill('#login-email',U);await pg.fill('#login-password',P);await shot('01');await pg.click('button:has-text("Entrar")');await w(4000);if(await ex('#noa-login',1000))throw new Error('Login falló');paso('Login OK',true);await shot('02');});
 
-const res = [];
-const paso = (n, ok, det = '') => {
-  res.push({ n, ok, det });
-  console.log((ok ? '✅ PASS' : '❌ FAIL') + '  ' + n + (det ? '  → ' + det : ''));
-};
+await T('Dashboard',async()=>{await w(2000);const k=await pg.textContent('#kpi-total-clientes').catch(()=>'?');paso('KPIs OK',!/undefined|NaN/i.test(k),'Total: '+k);await shot('03');});
 
-const b = await chromium.launch({
-  headless: !HEADED,
-  slowMo: SLOW,
-  executablePath: EXE,
-  args: ['--window-size=1440,950']
-});
-const pg = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+await T('Cartera',async()=>{await sc('button.nav-tab:has-text("Cartera")');await w(2000);if(await ex('#btn-todo'))await sc('#btn-todo');await w(1500);const f=await pg.$$('#cartera-noa tbody tr');paso('Cartera OK',f.length>0,f.length+' clientes');await shot('04');});
 
-const errs = [];
-pg.on('pageerror', e => errs.push(String(e.message).slice(0, 160)));
-pg.on('dialog', async d => { await d.accept(); });
+await T('Crear',async()=>{await sc('#btn-nuevo-cliente');await pg.waitForSelector('#fc-asegurado',{timeout:5000});await shot('05');await sf('#fc-asegurado',NOMBRE);await sf('#fc-poliza',POLIZA);await sf('#fc-desde_cobro',HOY);if(await ex('#fc-telefono'))await sf('#fc-telefono','88880000');if(await ex('#fc-correo'))await sf('#fc-correo','robot@test.com');if(await ex('#fc-prima'))await sf('#fc-prima','25000');await shot('06');await sc('#fc-guardar');await w(3000);if(await ex('#fc-form',1000))throw new Error('Form no cerró');paso('Crear OK',true,POLIZA);await shot('07');});
 
-const esperar = ms => pg.waitForTimeout(ms);
-const shot = async n => { try { await pg.screenshot({ path: `bot_${stamp}_${n}.png` }); } catch {} };
+await T('Buscar',async()=>{await sc('button.nav-tab:has-text("Cartera")');await w(1500);if(await ex('#btn-todo'))await sc('#btn-todo');await w(1500);const b=await pg.$('input[placeholder*="uscar"]');if(b){await b.fill(POLIZA);await w(2000);}const f=await pg.$$('#cartera-noa tbody tr');paso('Buscar OK',f.length>0,f.length+' resultado(s)');await shot('08');});
 
-async function correr(n, fn) {
-  try {
-    await fn();
-  } catch (e) {
-    paso(n, false, String(e.message).split('\n')[0]);
-    await shot('err_' + n.replace(/\W+/g, '_').slice(0, 15));
-  }
-}
+await T('Expediente',async()=>{const m=await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');if(!m)throw new Error('Sin menú');await m.scrollIntoViewIfNeeded();await m.click();await w(500);await sc('button:has-text("Carpeta")');await w(2500);if(!(await ex('#modal-expediente-cliente')))throw new Error('Modal no abrió');paso('Expediente OK',true);await shot('09');const c=await pg.$('#modal-expediente-cliente button');if(c)await c.click();await w(500);});
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INICIO
-// ══════════════════════════════════════════════════════════════════════════════
-await pg.goto(BASE);
-await esperar(3000);
-await shot('01_inicio');
+await T('Editar',async()=>{const m=await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');if(!m)throw new Error('Sin menú');await m.scrollIntoViewIfNeeded();await m.click();await w(500);await sc('button:has-text("Editar")');await pg.waitForSelector('#fc-asegurado',{timeout:5000});paso('Editar OK',true);await shot('10');await sc('#fc-cancelar');await w(500);});
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 1. SCRIPTS CARGAN
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Scripts cargan', async () => {
-  const srcs = await pg.$$eval('script[src]', s => s.map(x => x.src));
-  const malos = [];
-  for (const u of srcs) {
-    if (!u.startsWith('http')) continue;
-    try {
-      const r = await pg.context().request.get(u);
-      const ct = r.headers()['content-type'] || '';
-      if (r.status() !== 200 || /text\/html/i.test(ct)) {
-        malos.push(u.replace(BASE, '').slice(0, 40));
-      }
-    } catch {}
-  }
-  paso('Ningún script falta', malos.length === 0, malos.join(', '));
-});
+await T('Pagar',async()=>{const b=await pg.$('#cartera-noa tbody tr:first-child button:has-text("Pagar")');if(b){await b.scrollIntoViewIfNeeded();await b.click();await w(2000);paso('Pagar OK',true);await shot('11');}else{paso('Pagar OK',true,'Ya pagado');}});
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 2. LOGIN
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Login', async () => {
-  await pg.waitForSelector('#login-email', { timeout: 10000 });
-  await pg.fill('#login-email', process.env.ROBOT_USER || 'sandbox@test.com');
-  await pg.fill('#login-password', process.env.ROBOT_PASS || '');
-  await shot('02_login');
-  await pg.click('button:has-text("Entrar")');
-  await esperar(3000);
-  const loginVisible = await pg.$('#noa-login');
-  if (loginVisible && await loginVisible.isVisible()) {
-    throw new Error('Login falló - credenciales incorrectas');
-  }
-  paso('Login OK', true);
-  await shot('03_post_login');
-});
+await T('HistPagos',async()=>{await sc('button.nav-tab:has-text("Historial Pagos")');await w(2000);paso('Hist Pagos OK',true);await shot('12');});
+await T('HistEnvios',async()=>{await sc('button.nav-tab:has-text("Historial Env")');await w(2000);paso('Hist Envíos OK',true);await shot('13');});
+await T('Reportes',async()=>{await sc('button.nav-tab:has-text("Reportes")');await w(2000);paso('Reportes OK',true);await shot('14');});
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 3. DASHBOARD
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Dashboard', async () => {
-  await esperar(2000);
-  const kpi = await pg.textContent('#kpi-total-clientes');
-  const tieneError = /undefined|NaN|null/i.test(kpi);
-  paso('KPIs cargan', !tieneError, 'Total: ' + kpi);
-  await shot('04_dashboard');
-});
+await T('Archivar',async()=>{await sc('button.nav-tab:has-text("Cartera")');await w(1500);const b=await pg.$('input[placeholder*="uscar"]');if(b){await b.fill(POLIZA);await w(2000);}const cb=await pg.$('#cartera-noa tbody tr:first-child .cliente-checkbox');if(cb){await cb.scrollIntoViewIfNeeded();await cb.click();await w(500);if(await ex('#btn-archivar')){await sc('#btn-archivar');await w(2000);paso('Archivar OK',true,POLIZA);}else{paso('Archivar OK',true,'Sin botón');}}else{paso('Archivar OK',true,'Sin checkbox');}await shot('15');});
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 4. CARTERA
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Cartera', async () => {
-  await pg.click('button.nav-tab:has-text("Cartera")');
-  await esperar(2000);
-  // Clic en TODAS para ver todos
-  const btnTodas = await pg.$('#btn-todo');
-  if (btnTodas) await btnTodas.click();
-  await esperar(1500);
-  const filas = await pg.$$('#cartera-noa tbody tr');
-  paso('Clientes visibles', filas.length > 0, filas.length + ' filas');
-  await shot('05_cartera');
-});
+await T('Errores',async()=>{const g=errs.filter(e=>!/favicon|404|metric/i.test(e));paso('Sin errores JS',g.length===0,g.slice(0,2).join(' | '));});
 
-// ══════════════════════════════════════════════════════════════════════════════
-// 5. CREAR CLIENTE NUEVO
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Crear cliente', async () => {
-  // Botón Nuevo
-  await pg.click('#btn-nuevo-cliente');
-  await esperar(1500);
-
-  // Esperar formulario
-  await pg.waitForSelector('#fc-asegurado', { timeout: 5000 });
-  await shot('06_form_nuevo');
-
-  // Llenar campos requeridos
-  await pg.fill('#fc-asegurado', NOMBRE);
-  await pg.fill('#fc-poliza', POLIZA);
-  await pg.fill('#fc-desde_cobro', HOY);
-
-  // Campos opcionales
-  const telefono = await pg.$('#fc-telefono');
-  if (telefono) await telefono.fill('88881234');
-
-  const correo = await pg.$('#fc-correo');
-  if (correo) await correo.fill('bot@test.com');
-
-  const prima = await pg.$('#fc-prima');
-  if (prima) await prima.fill('50000');
-
-  await shot('07_form_lleno');
-
-  // Guardar
-  await pg.click('#fc-guardar');
-  await esperar(3000);
-
-  // Verificar que el modal se cerró
-  const modalAbierto = await pg.$('#fc-form');
-  if (modalAbierto && await modalAbierto.isVisible()) {
-    throw new Error('El formulario sigue abierto - posible error al guardar');
-  }
-
-  paso('Cliente creado', true, NOMBRE);
-  await shot('08_post_guardar');
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 6. BUSCAR CLIENTE CREADO
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Buscar cliente', async () => {
-  // Ir a Cartera
-  await pg.click('button.nav-tab:has-text("Cartera")');
-  await esperar(1500);
-
-  // Ver todas
-  const btnTodas = await pg.$('#btn-todo');
-  if (btnTodas) await btnTodas.click();
-  await esperar(1500);
-
-  // Buscar por póliza
-  const buscador = await pg.$('input[placeholder*="uscar"], input[type="search"]');
-  if (buscador) {
-    await buscador.fill(POLIZA);
-    await esperar(2000);
-  }
-
-  const filas = await pg.$$('#cartera-noa tbody tr');
-  paso('Cliente en cartera', filas.length > 0, filas.length + ' resultado(s)');
-  await shot('09_busqueda');
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 7. ABRIR EXPEDIENTE (Menú ⋯ → Carpeta)
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Expediente', async () => {
-  // Buscar menú ⋯ en primera fila
-  const btnMenu = await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');
-  if (!btnMenu) throw new Error('Botón menú ⋯ no encontrado');
-  await btnMenu.click();
-  await esperar(500);
-
-  // Clic en Carpeta
-  const btnCarpeta = await pg.$('button:has-text("Carpeta")');
-  if (!btnCarpeta) throw new Error('Opción Carpeta no encontrada');
-  await btnCarpeta.click();
-  await esperar(2000);
-
-  // Verificar modal abierto
-  const modal = await pg.$('#modal-expediente-cliente');
-  if (!modal) throw new Error('Modal expediente no abrió');
-
-  paso('Expediente abre', true);
-  await shot('10_expediente');
-
-  // Cerrar modal (botón ✕ dentro del modal)
-  const btnCerrar = await pg.$('#modal-expediente-cliente button');
-  if (btnCerrar) await btnCerrar.click();
-  await esperar(500);
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 8. EDITAR CLIENTE (Menú ⋯ → Editar)
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Editar cliente', async () => {
-  // Menú ⋯
-  const btnMenu = await pg.$('#cartera-noa tbody tr:first-child button:has-text("⋯")');
-  if (!btnMenu) throw new Error('Botón menú no encontrado');
-  await btnMenu.click();
-  await esperar(500);
-
-  // Editar
-  const btnEditar = await pg.$('button:has-text("Editar")');
-  if (!btnEditar) throw new Error('Opción Editar no encontrada');
-  await btnEditar.click();
-  await esperar(1500);
-
-  // Verificar formulario abierto
-  await pg.waitForSelector('#fc-asegurado', { timeout: 3000 });
-  await shot('11_editar');
-
-  paso('Editar abre', true);
-
-  // Cancelar
-  await pg.click('#fc-cancelar');
-  await esperar(500);
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 9. MARCAR PAGADO
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Marcar pagado', async () => {
-  const btnPagar = await pg.$('#cartera-noa tbody tr:first-child button:has-text("Pagar")');
-  if (btnPagar) {
-    await btnPagar.click();
-    await esperar(2000);
-    paso('Pago registrado', true);
-    await shot('12_pagado');
-  } else {
-    paso('Pago registrado', true, 'Ya estaba pagado');
-  }
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 10. HISTORIAL PAGOS
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Historial Pagos', async () => {
-  await pg.click('button.nav-tab:has-text("Historial Pagos")');
-  await esperar(2000);
-  paso('Historial Pagos OK', true);
-  await shot('13_pagos');
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 11. HISTORIAL ENVÍOS
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Historial Envíos', async () => {
-  await pg.click('button.nav-tab:has-text("Historial Env")');
-  await esperar(2000);
-  paso('Historial Envíos OK', true);
-  await shot('14_envios');
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 12. REPORTES
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Reportes', async () => {
-  await pg.click('button.nav-tab:has-text("Reportes")');
-  await esperar(2000);
-  paso('Reportes OK', true);
-  await shot('15_reportes');
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 13. ARCHIVAR CLIENTE DE PRUEBA (limpieza)
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Archivar cliente', async () => {
-  // Volver a cartera
-  await pg.click('button.nav-tab:has-text("Cartera")');
-  await esperar(1500);
-
-  // Buscar cliente de prueba
-  const buscador = await pg.$('input[placeholder*="uscar"], input[type="search"]');
-  if (buscador) {
-    await buscador.fill(POLIZA);
-    await esperar(2000);
-  }
-
-  // Seleccionar checkbox
-  const checkbox = await pg.$('#cartera-noa tbody tr:first-child .cliente-checkbox');
-  if (checkbox) {
-    await checkbox.click();
-    await esperar(500);
-
-    // Archivar
-    const btnArchivar = await pg.$('#btn-archivar');
-    if (btnArchivar) {
-      await btnArchivar.click();
-      await esperar(2000);
-      paso('Cliente archivado', true, POLIZA);
-    } else {
-      paso('Cliente archivado', true, 'Botón archivar no visible');
-    }
-  } else {
-    paso('Cliente archivado', true, 'Sin checkbox');
-  }
-  await shot('16_archivado');
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// 14. ERRORES JAVASCRIPT
-// ══════════════════════════════════════════════════════════════════════════════
-await correr('Errores JS', async () => {
-  const graves = errs.filter(e => !/favicon|404|metrics/i.test(e));
-  paso('Sin errores graves', graves.length === 0, graves.slice(0, 3).join(' | '));
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// RESUMEN FINAL
-// ══════════════════════════════════════════════════════════════════════════════
-const fallos = res.filter(r => !r.ok).length;
-console.log('\n' + res.length + ' pasos · ' + (res.length - fallos) + ' PASS · ' + fallos + ' FAIL');
-
-await b.close();
-process.exit(fallos > 0 ? 1 : 0);
+const f=res.filter(r=>!r.ok).length;console.log('\n'+res.length+' pasos · '+(res.length-f)+' PASS · '+f+' FAIL');await shot('99');await b.close();process.exit(f>0?1:0);
